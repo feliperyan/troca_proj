@@ -2,6 +2,11 @@
 import os
 import mongoengine
 
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+DB_PATH = os.path.join(SITE_ROOT, '../fenton.db')
+MEDIA_PATH = os.path.join(SITE_ROOT, '../media')
+TEMPLATES_PATH = os.path.join(SITE_ROOT, 'templates')
+
 FBOOKID = '112921768860216'
 FBOOKSECRET = '32c7334cbf6811abdf6d8579e59c0cac'
 
