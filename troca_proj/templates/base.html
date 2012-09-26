@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>{%block pagetitle%}{%endblock%} </title>		
+		<link rel="stylesheet" href="{{ STATIC_URL }}styles.css" type="text/css" media="screen">		
+	</head>
+
+	<body>
+	<div id="wrapper">	
+		<div id="header">
+			{% if user.is_authenticated %}
+				<p style="float: right;">
+					<a style="float: right;" href="/accounts/logout">Logout</a>
+				</p>
+				<h3> Hi {{user.first_name}}! </h3>		
+			{% else %}
+				<p style="float: right;">
+					<a href="/accounts/login">Login</a>
+				</p>
+				<h3> Not logged in </h3>
+			{% endif %}
+		</div>
+		<div id="navigation">
+			<ul>
+				<li><a href="/accounts/profile">Profile</a></li>
+				<li><a href="/troca/sentiment">Search</a></li>
+				<li><a href="/troca/about">About</a></li>
+			</ul>
+		</div>
+		<div id="content">
+			{% block content %}{% endblock %}
+		</div>
+		<div id="footer">
+			Copyright © Sabiá, 2012
+		</div>
+	</div>	
+	</body>
+
+</html>
+

@@ -1,0 +1,4 @@
+*.pyc
+*.pyo
+relational_db
+.DS_Store
