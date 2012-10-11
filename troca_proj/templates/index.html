@@ -6,13 +6,14 @@
 
 {% for i in Items  %}            
 	<div id="item_listing">
-	<p> Title: {{ i.title }} </p>		
-	
-	{% for o in i.offers %}            
-		<p> Offer: {{ o.title }} </p>
-		<p> Author: {{ o.author }} </p>			
-	{% endfor %}		
+		<h3> Title: {{ i.title }} </h3>		
+		
+		{% for o in i.offers %}            
+			<p> Offer: {{ o.title }} </p>
+			<p> Author: {{ o.author }} </p>			
+		{% endfor %}		
 	</div>
 {% endfor %}
 
 {% endblock %}
+
