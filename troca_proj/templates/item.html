@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2> TEST of Item Form </h2>
+
+
+<form action="/item/" method="post">
+	{% csrf_token %}
+	
+	{% for f in form  %}            
+		<div class="fieldWrapper">
+			{{ f.errors }}
+			{{ f.label_tag }}: {{ f }}
+		</div>
+	{% endfor %}
+
+	<p><input type="submit" value="SUBMIT" /> </p>
+
+</form>
+
+
+{% endblock %}
+
