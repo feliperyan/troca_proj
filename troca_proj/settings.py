@@ -10,6 +10,9 @@ TEMPLATES_PATH = os.path.join(SITE_ROOT, 'templates')
 FBOOKID = '112921768860216'
 FBOOKSECRET = '32c7334cbf6811abdf6d8579e59c0cac'
 
+# Add the 1st forward slash to get rid of the /accounts/yaddayadda
+LOGIN_REDIRECT_URL = '/my_items/'
+
 DIR  = os.path.abspath(os.path.dirname(__file__))
 DBNAME = 'mongo_db'
 

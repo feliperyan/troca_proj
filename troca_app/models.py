@@ -1,6 +1,6 @@
 #from django.db import models
 from mongoengine import *
-
+from django.contrib.auth.models import User
 
 class ItemInOffer(EmbeddedDocument):
     itemTitle = StringField(max_length=70, required=True)
@@ -25,6 +25,7 @@ class Offer(EmbeddedDocument):
         app_label = 'troca_app'
 
 class GenericItem(Document):
+    owner_id = IntField(required=True)
     title = StringField(max_length=70, required=True)
     description = StringField(max_length=140, required=True)
     value = IntField()
@@ -35,4 +36,17 @@ class GenericItem(Document):
         return self.title
 
     class Meta:
+        abstract = True
         app_label = 'troca_app'
+        db_table = 'generic_item'
+        
+
+
+class Muffin(GenericItem):
+    baked_on = DateTimeField(required=False)
+
+
+class Car(GenericItem):
+    kilometers = IntField(required=False)
+
+

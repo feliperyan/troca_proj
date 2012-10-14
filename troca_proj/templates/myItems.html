@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2> Your Items </h2>
+
+{% if myItems %}
+
+	{% for i in myItems  %}            
+		<div id="item_listing">
+			<h3> Title: {{ i.title }} </h3>		
+			
+			{% for o in i.offers %}
+				<div id="offers">            
+					<p> Offer: {{ o.title }} </p>
+					<p> Author: {{ o.author }} </p>			
+				</div>
+			{% endfor %}		
+		</div>
+
+	{% endfor %}
+
+{% else %}
+	<p> You have no items</p>
+
+{% endif %}
+
+{% endblock %}
+

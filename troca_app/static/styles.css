@@ -17,3 +17,13 @@ margin: 0px;
 h2{
 	text-align: center;
 }
+
+#item_listing {
+	border: thin solid #000000;
+	margin-top: 8pt;
+	padding: 8pt;
+}
+
+#offers {
+	margin-left: 18pt;
+}
