@@ -5,12 +5,20 @@ from django.http import HttpResponseRedirect
 from models import *
 from forms import *
 from django.contrib.auth.decorators import login_required
-
+from django.http import Http404
 from django.views.generic import ListView
 
 def index(request):
     items = GenericItem.objects.all()
     return render(request, 'index.html', {'Items': items})
+
+def detail(request, item_id):
+    try:
+        item = GenericItem.objects.get(pk=item_id)
+        owner = User.objects.get(pk=item.owner_id)
+    except GenericItem.DoesNotExist:
+        raise Http404
+    return render(request, 'item_detail.html', {'item': item, 'owner':owner})
 
 
 def thanks(request):

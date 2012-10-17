@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Title: {{ item.title }} </h3>
+<h3> Owner: {{ owner.username }} </h3>
+
+{% for o in i.offers %}
+	<div id="offers">            
+		<p> Offer: {{ o.title }} </p>
+		<p> Author: {{ o.author }} </p>			
+	</div>
+{% endfor %}		
+
+{% endblock %}
+

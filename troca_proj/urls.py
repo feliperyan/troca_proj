@@ -20,11 +20,11 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 	url( r'^$', index),
-	url( r'^item/$', genericItem),
+	url( r'^add_item/$', genericItem),
 	url( r'^thanks/$', thanks),
     url( r'^accounts/login/$', login, {'template_name': 'login.html'} ),
-    url( r'^accounts/profile/$', logout ),
-    url( r'^accounts/logout/$', logout ),
+    url( r'^accounts/logout/$', logout, {'next_page': '/'} ),
     url( r'^my_items/$', login_required(ItemsForLoggedUser.as_view()) ),
+    url(r'^items/(?P<item_id>\w+)/$', detail, name='detail'),
 
 )
