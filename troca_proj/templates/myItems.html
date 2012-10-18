@@ -8,7 +8,7 @@
 
 	{% for i in myItems  %}            
 		<div id="item_listing">
-			<h3> Title: {{ i.title }} </h3>		
+			<h3> <a href="{% url detail i.id %}" > {{ i.title }} </a>  </h3>		
 			
 			{% for o in i.offers %}
 				<div id="offers">            

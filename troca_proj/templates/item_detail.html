@@ -2,8 +2,17 @@
 
 {% block content %}
 
+<h2> <a href="{% url make_offer item.id %}" > Make offer </a>  </h2>
+
 <h3>Title: {{ item.title }} </h3>
 <h3> Owner: {{ owner.username }} </h3>
+<h3>Value: ${{ item.value }} </h3>
+<h3> Description: </h3>
+<p> {{ item.description }} </p>
+
+{% if item.location %}
+	<h3>Location: ${{ item.location }} </h3>
+{% endif %}
 
 {% for o in i.offers %}
 	<div id="offers">            

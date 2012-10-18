@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load url from future %}
+
 
 {% block content %}
 
@@ -7,7 +7,7 @@
 
 {% for i in Items  %}            
 	<div id="item_listing">
-		<h3> Title: <a href="{% url 'detail' i.id %}" > {{ i.title }} </a> </h3>	
+		<h3> Title: <a href="{% url detail i.id %}" > {{ i.title }} </a> </h3>	
 	</div>
 
 {% endfor %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Make your offer for:</h3>
+
+<div id="item_wanted_listing">
+	<p> Title: {{ wantedItem.title }} </p>
+	<p> {{ wantedItem.description }} </p>
+	<p> {{ wantedItem.value }} </p>
+</div>
+
+<h3> Your Items </h3>
+
+{% if myItems %}
+	<ul>
+	{% for i in myItems  %}            
+		<div id="item_offer_listing">
+			<li> Title: {{ i.title }} </li>
+			
+		</div>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p> You have no items to offer!</p>
+{% endif %}
+
+{% endblock %}
+

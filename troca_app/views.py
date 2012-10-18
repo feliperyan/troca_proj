@@ -18,7 +18,7 @@ def detail(request, item_id):
         owner = User.objects.get(pk=item.owner_id)
     except GenericItem.DoesNotExist:
         raise Http404
-    return render(request, 'item_detail.html', {'item': item, 'owner':owner})
+    return render(request, 'item_detail.html', {'item': item, 'owner': owner})
 
 
 def thanks(request):
@@ -49,6 +49,19 @@ def genericItem(request):
 	return render(request, 'item.html', {
 		'form': form,
 	} )
+
+def makeOffer(request, item_id):
+	#if request.method == 'POST':
+
+	wantedItem = GenericItem.objects.get(pk=item_id)
+	myItems = GenericItem.objects.filter(owner_id = request.user.id)
+
+	#else:
+	return render(request, 'make_offer.html', {
+		'wantedItem': wantedItem,'myItems': myItems
+	})
+
+
 
 
 #Could not use standard @login_required decorator since this is a ClassBased GenericView...
