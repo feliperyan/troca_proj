@@ -27,3 +27,23 @@ h2{
 #offers {
 	margin-left: 18pt;
 }
+
+#item_wanted {
+	border: thin solid #000000;
+	margin-top: 8pt;
+	padding: 8pt;
+	float: left;
+}
+
+#items_offered {
+	border: thin solid #000000;
+	margin-top: 8pt;
+	padding: 8pt;
+	float: right;
+}
+
+#offer_container {
+	height: 80%;
+	display: block;
+	overflow: auto;
+}

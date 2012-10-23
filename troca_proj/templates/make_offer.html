@@ -1,29 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h3>Make your offer for:</h3>
-
-<div id="item_wanted_listing">
-	<p> Title: {{ wantedItem.title }} </p>
-	<p> {{ wantedItem.description }} </p>
-	<p> {{ wantedItem.value }} </p>
-</div>
-
-<h3> Your Items </h3>
-
-{% if myItems %}
-	<ul>
-	{% for i in myItems  %}            
-		<div id="item_offer_listing">
-			<li> Title: {{ i.title }} </li>
-			
-		</div>
-	{% endfor %}
-	</ul>
-{% else %}
-	<p> You have no items to offer!</p>
+{% if error %}
+	<h2>Must select at least 1 item to offer.</h2>
 {% endif %}
 
+{% if wantedItem.owner_id != user.id %}
+
+	<div id="offer_container">
+
+		<div id="item_wanted">
+			<h3>Make your offer for:</h3>
+			<p> Title: {{ wantedItem.title }} </p>
+			<p> {{ wantedItem.description }} </p>
+			<p> {{ wantedItem.value }} </p>
+		</div>
+
+		{% if myItems %}
+			<form action="." method="post"> {% csrf_token %}
+
+				<div id="items_offered">	
+					<h3> Your items available for offer </h3>
+					{% for i in myItems  %}            
+						<div>
+							<p> <input type="checkbox" name="items_selected" value="{{ i.id }}" /> {{ i.title }} </p>
+						</div>
+					{% endfor %}
+					<input type="submit" value="MAKE OFFER">
+				</div>
+			</form>
+
+		{% else %}
+			<p> You have no items to offer!</p>
+		{% endif %}
+
+{% else %}
+	<h3>You can't swap for one of your own items.</h3>
+{% endif %}
+	
+</div>
 {% endblock %}
 

@@ -34,6 +34,7 @@ class ItemInOffer(EmbeddedDocument):
 class Offer(EmbeddedDocument):
     title = StringField(max_length=70, required=True)
     author_id = IntField(required=True)
+    author = StringField(max_length=70, required=True)
     items = ListField(EmbeddedDocumentField('ItemInOffer'))
     
     def __unicode__(self):

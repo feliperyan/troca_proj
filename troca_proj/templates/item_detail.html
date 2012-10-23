@@ -14,7 +14,7 @@
 	<h3>Location: ${{ item.location }} </h3>
 {% endif %}
 
-{% for o in i.offers %}
+{% for o in item.offers %}
 	<div id="offers">            
 		<p> Offer: {{ o.title }} </p>
 		<p> Author: {{ o.author }} </p>			

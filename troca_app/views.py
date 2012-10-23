@@ -38,7 +38,7 @@ def genericItem(request):
 			v = form.cleaned_data['value']
 
 			#item = GenericItem(owner_id=request.user.id, title=t, description=d, value=v, location=None, offers=[])
-			item = Car(owner_id=request.user.id, title=t, description=d, value=v, location=None, offers=[])
+			item = GenericItem(owner_id=request.user.id, title=t, description=d, value=v, location=None, offers=[])
 			item.save()
 
 			return HttpResponseRedirect('/thanks/')
@@ -51,15 +51,41 @@ def genericItem(request):
 	} )
 
 def makeOffer(request, item_id):
-	#if request.method == 'POST':
-
+	
 	wantedItem = GenericItem.objects.get(pk=item_id)
 	myItems = GenericItem.objects.filter(owner_id = request.user.id)
 
-	#else:
-	return render(request, 'make_offer.html', {
-		'wantedItem': wantedItem,'myItems': myItems
-	})
+	if request.method == 'POST':
+		selected_items = request.POST.getlist('items_selected')
+
+		#import pdb; pdb.set_trace()
+
+		if len(selected_items) < 1:
+			return render(request, 'make_offer.html', {
+				'wantedItem': wantedItem,'myItems': myItems, 'error':'Must select an item.'
+			})
+
+		else:
+			items_in_offer = list()
+			for i in selected_items:
+				wholeItem = GenericItem.objects.get(pk=i)
+				partialitem = ItemInOffer(itemTitle=wholeItem.title, value=wholeItem.value, item=wholeItem)
+				items_in_offer.append(partialitem)
+
+			offer = Offer(title='An offer', author_id=request.user.id, author=request.user.username, items=items_in_offer)
+
+			#import pdb; pdb.set_trace()
+
+			wantedItem.offers.append(offer)
+			wantedItem.save()
+
+			return HttpResponseRedirect('/thanks/')
+
+	else:
+		
+		return render(request, 'make_offer.html', {
+			'wantedItem': wantedItem,'myItems': myItems
+		})
 
 
 
