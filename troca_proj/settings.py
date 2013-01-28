@@ -3,18 +3,19 @@ import os
 import mongoengine
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
-DB_PATH = os.path.join(SITE_ROOT, '../fenton.db')
 MEDIA_PATH = os.path.join(SITE_ROOT, '../media')
 TEMPLATES_PATH = os.path.join(SITE_ROOT, 'templates')
 
-FBOOKID = '112921768860216'
-FBOOKSECRET = '32c7334cbf6811abdf6d8579e59c0cac'
+FACEBOOK_API_KEY = '112921768860216'
+FACEBOOK_APP_ID = '112921768860216'
+FACEBOOK_APP_SECRET = '32c7334cbf6811abdf6d8579e59c0cac'
+
 
 # Add the 1st forward slash to get rid of the /accounts/yaddayadda
 LOGIN_REDIRECT_URL = '/my_items/'
 
 DIR  = os.path.abspath(os.path.dirname(__file__))
-DBNAME = 'mongo_db'
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -23,10 +24,11 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
-DATABASE_ROUTERS = ['troca_proj.routers.AuthRouter']
+#DATABASE_ROUTERS = ['troca_proj.routers.AuthRouter']
 
 MANAGERS = ADMINS
 
+DBNAME = 'mongo_db'
 mongoengine.connect(DBNAME)
 
 DATABASES = {
@@ -38,11 +40,9 @@ DATABASES = {
         'HOST': '',
         'PORT': ''
     },
-    DBNAME: {
-        'NAME': 'mongo_db',
-                            
-    }, 
 }
+
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -143,11 +143,35 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'troca_app',
+    'django_facebook',
     # Uncomment the next line to enable the admin:
      'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 ]
+
+# The next 2 lists are stuff added from django_facebook
+
+#AUTH_PROFILE_MODULE = 'django_facebook.FacebookProfile'
+# NOTE: THIS PROFILE MODEL IS ACTUALLY IN MY OWN APP, I JUST NAMED IT
+# LIKE THIS SO IT'D BE GROUPED WITH THE OTHER PROFILE STUFF!!!
+AUTH_PROFILE_MODULE = 'django_facebook.TrocaUserProfile'
+
+AUTHENTICATION_BACKENDS = (
+    'django_facebook.auth_backends.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django_facebook.context_processors.facebook',
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.contrib.messages.context_processors.messages',
+)
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

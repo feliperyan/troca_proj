@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h2> Your Items </h2>
+<h2> Your Items !!!</h2>
 
 {% if myItems %}
 
@@ -23,6 +23,29 @@
 {% else %}
 	<p> You have no items</p>
 
+{% endif %}
+
+<h2> Your offers </h2>
+
+{% if myOffers %}
+	
+	{% for i in myOffers  %}            
+		<div id="OffersMade_listing">
+			<h3> <a href="{% url detail i.id %}" > {{ i.title }} </a>  </h3>		
+			
+			{% for o in i.offers %}
+				<div id="offers">            
+					<p> Offer: {{ o.title }} </p>
+					<p> Author: {{ o.author }} </p>			
+				</div>
+			{% endfor %}		
+		</div>
+
+	{% endfor %}	
+
+
+{% else %}
+	<p> You have made no offers.</p>
 {% endif %}
 
 {% endblock %}

@@ -5,4 +5,13 @@ class GenericItemForm(forms.Form):
 	description = forms.CharField(max_length=100)
 	value = forms.IntegerField()
 	#location = forms.CharField(max_length=100)
-	#offers = forms.CharField(max_length=100)
+	
+
+class GenericServiceForm(GenericItemForm):
+	lengthOfEngagement = forms.IntegerField()
+	meetUpAddress = forms.CharField(max_length=100) 
+
+
+class LanguageExchangeForm(GenericServiceForm):
+	languageOffered = forms.CharField(max_length=100)
+	
