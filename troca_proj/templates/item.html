@@ -5,13 +5,13 @@
 <h2> TEST of Item Form </h2>
 
 
-<form action="/item/" method="post">
+<form action="/add_item/{{ category }}" method="post">
 	{% csrf_token %}
 	
 	{% for f in form  %}            
 		<div class="fieldWrapper">
 			{{ f.errors }}
-			{{ f.label_tag }}: {{ f }}
+			{{ f.label_tag }} {{ f }}
 		</div>
 	{% endfor %}
 

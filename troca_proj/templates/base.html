@@ -5,13 +5,21 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>{%block pagetitle%}{%endblock%} </title>		
-		<link rel="stylesheet" href="{{ STATIC_URL }}styles.css" type="text/css" media="screen">		
+		
+		<script type="text/javascript" src="{{ STATIC_URL }}/jquery1.8.3.js"></script>
+
+		<link rel="stylesheet" href="{{ STATIC_URL }}/bootstrap/css/bootstrap.css" type="text/css" media="screen">
+		<script type="text/javascript" src="{{ STATIC_URL }}/bootstrap/js/bootstrap.js"></script>
+
+		{%block page_specific_script%}{%endblock%}
+
 	</head>
 
 
 	<body>
-	<div id="wrapper">	
-		<div id="header">
+	
+	<div class="container">	
+		<div>
 			{% if user.is_authenticated %}
 				<p style="float: right;">
 					<a style="float: right;" href="/accounts/logout">Logout</a>
@@ -24,20 +32,26 @@
 				<h3> Not logged in </h3>
 			{% endif %}
 		</div>
-		<div id="navigation">
-			<ul>
+		<div >
+			<ul class="nav nav-pills" >
 				<li><a href="/my_items">My Items</a></li>
 				<li><a href="/">Search</a></li>
-				<li><a href="/item">Add Item</a></li>
+				<li><a href="/categories">Add Item</a></li>
+				<li><a href="/accounts/{{user.username}}">Profile</a></li>
+				<li><a href="/admin">Admin</a></li>
 			</ul>
 		</div>
 		<div id="content">
 			{% block content %}{% endblock %}
 		</div>
-		<div id="footer">
-			Copyright © Sabiá, 2012
-		</div>
+		
+		<hr>
+		<footer>
+			<p> © Felipe Ryan 2012 </p>
+		</footer>
+	
 	</div>	
+	
 	</body>
 
 </html>
