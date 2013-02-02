@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{%block page_specific_script%}
+<script>
+	
+	function listCategory(data, cat){
+		//unbind all events:
+		$(".ajax_click").unbind();
+
+		var dic = data;
+
+		var text = '';
+		//console.log(cat);
+		$.each(data['items'], function(index, value) { 
+  			 text = text + '<p class="cat"><a href="#" class="ajax_click">' + value + '</a></p>'
+		});
+
+		//If the last category has been selected, text will be null, therefore user
+		//should be able to progress to the next step:
+		if (text === '') {
+			text = '<p> <a href="/add_item/'+cat+'"> <input type="button" value="GO"> </p>';
+		}
+
+		$("#categories").html('');
+		$("#categories").html(text);
+
+		var bread = '';
+		$.each(data['crumbs'], function(index, value) { 
+  			 bread = bread + '<span class="divider">&gt;</span><li class="cat"><a href="#" class="ajax_click">' + value + '</a></li>'
+		});
+
+		$("#breadcrumb_categories ul").html('');
+		$("#breadcrumb_categories ul").html(bread);
+
+		//rebind everything again:
+		bindStuff();
+		
+	}
+
+	$(document).ready(function() {
+ 		
+		$.get("/getCategories/", {category: "Start"} ,function(data){
+				listCategory(data, "Start");
+			}, 'json');
+
+ 		$(".ajax_click").on({ click:function() {
+ 			var cat = $(this).text()
+ 			console.log("1st event: "+cat);
+			$.get("/getCategories/", {category: cat} ,function(data){
+				//alert(data);
+				listCategory(data, cat);
+			}, 'json');
+
+		}});
+
+
+	});
+	
+	function bindStuff(){
+		$(".ajax_click").on({ click:function() {
+ 			var cat = $(this).text() 			
+ 			console.log("2nd event: "+cat);	
+			$.get("/getCategories/", {category: cat} ,function(data){
+				//alert(data);
+				listCategory(data, cat);
+			}, 'json');
+
+		}});
+	}
+
+</script>
+
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<h2> Select categories </h2>
+
+	<div id="breadcrumb_categories">
+		<ul class="breadcrumb">
+		</ul>
+	</div>
+
+	<div id="categories">
+		<p> &nbsp; </p>
+		<p> &nbsp; </p>
+		<p> &nbsp; </p>
+		<p> &nbsp; </p>
+		<p> &nbsp; </p>
+		<p> &nbsp; </p>
+		<p> &nbsp; </p>	
+	</div>
+
+
+{% endblock %}
+

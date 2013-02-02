@@ -1,23 +1,46 @@
 from django import forms
-from nonrel_troca_app.models import GenericItem
+from troca_app.models import *
 from django.forms import ModelForm
 
-class GenericItemForm(forms.Form):
-	title = forms.CharField(max_length=100)
-	description = forms.CharField(max_length=100)
-	value = forms.IntegerField()
-	#location = forms.CharField(max_length=100)
-	
-class ModelFormGenericItem(ModelForm):
+from mongodbforms import DocumentForm
+
+class FormGenericItem(forms.Form):
+    title = forms.CharField(max_length=100)
+    description = forms.CharField(max_length=100)
+    value = forms.IntegerField()
+    
+
+    
+# Don't think I can use ModelForms with a Model object that inherits from Document
+# and not models.Model ...
+
+class ModelFormGenericItem(DocumentForm):
+   class Meta:
+       document = GenericItem
+       fields = ('title', 'value', 'description')
+
+
+class ModelFormMuffin(DocumentForm):
     class Meta:
-        model = GenericItem
+        document = Muffin
         fields = ('title', 'value', 'description')
+
+
+class ModelFormCameras(DocumentForm):
+    class Meta:
+        document = Camera
+        fields = ('title', 'value', 'description', 'brand')
 
 
 # Here we use a dummy `queryset`, because ModelChoiceField
 # see: http://stackoverflow.com/questions/4789466/populate-a-django-form-with-data-from-database-in-view
+
+# Bloody "objects" object from the GenericItem model, which inherits from Document and not models.Model 
+
 class MakeOfferForm(forms.Form):
-    itemsToOffer = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple(),queryset=GenericItem.objects.none())
+    itemsToOffer = forms.ModelMultipleChoiceField \
+        (widget=forms.CheckboxSelectMultiple(),queryset=Category.objects.none())
+    
     title = forms.CharField(max_length = 100)
 
     def __init__(self, user_id):

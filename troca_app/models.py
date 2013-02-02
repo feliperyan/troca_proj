@@ -70,10 +70,11 @@ class GenericItem(Document):
         return self.title
 
     class Meta:
-        abstract = True
+        abstract = False
         app_label = 'troca_app'
         db_table = 'generic_item'
         allow_inheritance = True
+
         
 
 class ItemInOffer(EmbeddedDocument):
@@ -103,7 +104,7 @@ class Offer(EmbeddedDocument):
 class Muffin(GenericItem):
     baked_on = DateTimeField()
 
-class Car(GenericItem):
-    kilometers = IntField()
+class Camera(GenericItem):
+    brand = StringField(max_length=70)
 
 

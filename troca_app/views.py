@@ -77,15 +77,17 @@ def add_item(request, category):
 
     if request.method == 'POST':        
         
-        # if category == 'Books':
-        #     form = ModelFormBook(request.POST)        
-        # elif category == 'Cameras':
-        #     form = ModelFormCameras(request.POST)        
-        # else:        
-        #     form = ModelFormGenericItem(request.POST)
-
-        form = ModelFormGenericItem(request.POST)
+        if category == 'Muffins':
+            form = ModelFormMuffin(request.POST)        
         
+        elif category == 'Cameras':
+            form = ModelFormCameras(request.POST)        
+        
+        else:        
+            form = ModelFormGenericItem(request.POST)
+
+        #form = ModelFormGenericItem(request.POST)
+
         if form.is_valid():
             #process the data in form.cleaned_data
 
@@ -102,8 +104,8 @@ def add_item(request, category):
         if i.count() != 0:
             raise Http404
 
-        if category == 'Books':
-            form = ModelFormBook()
+        if category == 'Muffins':
+            form = ModelFormMuffin()
         
         elif category == 'Cameras':
             form = ModelFormCameras()
@@ -177,7 +179,9 @@ def myProfile(request):
     
 
     # Example of a RAW MongoDB query:
-    itemsWithMyOffers = GenericItem.the_objects.raw_query({ 'offers.author_id': request.user.id })
+    #itemsWithMyOffers = GenericItem.the_objects.raw_query({ 'offers.author_id': request.user.id })
+    itemsWithMyOffers = GenericItem.objects(__raw__={ 'offers.author_id': request.user.id })
+
 
     return render(request, 'myItems.html', {
             'myItems': myItems,'myOffers': itemsWithMyOffers
