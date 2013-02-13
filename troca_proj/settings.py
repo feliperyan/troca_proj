@@ -30,10 +30,11 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DBNAME = 'mongo_db'
-mongoengine.connect(DBNAME)
+#mongoengine.connect(DBNAME)
 
 # FELIPE: Handling either local MongoDB for dev or Heroku's MongoLab MongoDB.
 regex = re.compile(r'^mongodb\:\/\/(?P<username>[_\w]+):(?P<password>[\w]+)@(?P<host>[\.\w]+):(?P<port>\d+)/(?P<database>[_\w]+)$')
+
 if not os.environ.has_key('MONGOLAB_URI'):
     mongoengine.connect(DBNAME)
 else:
