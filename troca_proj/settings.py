@@ -41,7 +41,7 @@ else:
     mongolab_url = os.environ['MONGOLAB_URI']
     match = regex.search(mongolab_url)
     data = match.groupdict()
-    connect(data['database'], host=data['host'], port=int(data['port']), username=data['username'], password=data['password'])
+    mongoengine.connect(data['database'], host=data['host'], port=int(data['port']), username=data['username'], password=data['password'])
 
 # FELIPE: Heroku specific Database settings.
 import dj_database_url
