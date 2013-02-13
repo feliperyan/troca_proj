@@ -1,6 +1,7 @@
 # Django settings for troca_proj project.
 import os
 import mongoengine
+import re
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 MEDIA_PATH = os.path.join(SITE_ROOT, '../media')
@@ -31,16 +32,33 @@ MANAGERS = ADMINS
 DBNAME = 'mongo_db'
 mongoengine.connect(DBNAME)
 
-DATABASES = {
-   'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'relational_db',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': ''
-    },
-}
+# FELIPE: Handling either local MongoDB for dev or Heroku's MongoLab MongoDB.
+regex = re.compile(r'^mongodb\:\/\/(?P<username>[_\w]+):(?P<password>[\w]+)@(?P<host>[\.\w]+):(?P<port>\d+)/(?P<database>[_\w]+)$')
+if not os.environ.has_key('MONGOLAB_URI'):
+    mongoengine.connect(DBNAME)
+else:
+    mongolab_url = os.environ['MONGOLAB_URI']
+    match = regex.search(mongolab_url)
+    data = match.groupdict()
+    connect(data['database'], host=data['host'], port=int(data['port']), username=data['username'], password=data['password'])
+
+# FELIPE: Heroku specific Database settings.
+import dj_database_url
+if not os.environ.has_key('DATABASE_URL'):
+    os.environ['DATABASE_URL'] = 'postgres://localhost/troca_nonrel'
+    
+DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
+
+# DATABASES = {
+#    'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': 'relational_db',
+#         'USER': '',
+#         'PASSWORD': '',
+#         'HOST': '',
+#         'PORT': ''
+#     },
+# }
 
 
 
