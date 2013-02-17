@@ -93,7 +93,8 @@ class Offer(EmbeddedDocument):
     author_id = IntField(required=True)
     author = StringField(max_length=70, required=True)
     items = ListField(EmbeddedDocumentField('ItemInOffer'))
-    
+    accepted = BooleanField()
+
     def __unicode__(self):
         return self.title
 

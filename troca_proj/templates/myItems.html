@@ -3,12 +3,16 @@
 {% block content %}
 
 <div>
-	<img src="/media/{{ user.get_profile.image.url }}" width=200 height=200 />
+	{% if user.get_profile.image %}
+		<img src="/media/{{ user.get_profile.image.url }}" width=100 height=100 />
+	{% else %}
+		<img src="#" width=100 height=100 />
+	{% endif %}
 
 </div>
 
 
-<h2> Your Items !</h2>
+<h2> Your listed items: </h2>
 
 {% if myItems %}
 
@@ -16,12 +20,18 @@
 		<div id="item_listing">
 			<h3> <a href="{% url detail i.id %}" > {{ i.title }} </a>  </h3>		
 			
-			{% for o in i.offers %}
-				<div id="offers">            
-					<p> Offer: {{ o.title }} </p>
-					<p> Author: {{ o.author }} </p>			
+			{% if i.offers %}
+				<div id="offers">
+				<p>Last 3 Offers:</p>				
+					<ul>
+					{% for o in i.offers|slice:":3" %}
+						<li> Offer: {{ o.title }} by <a href="#">{{ o.author }} </a></li>
+					{% endfor %}
+					</ul>
+				<p>See All offers</p>
 				</div>
-			{% endfor %}		
+			{% endif %}
+
 		</div>
 
 	{% endfor %}
@@ -31,7 +41,7 @@
 
 {% endif %}
 
-<h2> Your offers made :</h2>
+<h2> Offers you have made: </h2>
 
 {% if myOffers %}
 
