@@ -18,8 +18,14 @@
 
 		<form action="." method="post"> {% csrf_token %}
 
-			{{ form.as_p }}
+			
+			{% for c in form.itemsToOffer %}
 
+				<p>one choice</p>
+				{{ c }}
+			
+			{% endfor %}
+			
 			<input type="submit" value="MAKE OFFER">
 			
 		</form>

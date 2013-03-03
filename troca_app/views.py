@@ -93,6 +93,7 @@ def add_item(request, category):
 
             instance = form.save(commit = False)
             instance.owner_id = request.user.id
+            instance.owner_username = request.user.username
             instance.save()
             
             return HttpResponseRedirect('/thanks/')
@@ -123,7 +124,17 @@ def makeOfferWithForm(request, item_id):
     wantedItem = GenericItem.objects.get(pk=item_id)
 
     if request.method == 'POST':
-        return HttpResponseRedirect('/thanks/')
+
+        form = MakeOfferForm(request.POST)
+        if form.is_valid():
+            d = form.cleaned_data
+
+            
+
+            offer = Offer(title=d['title'], author_id=request.user.id,\
+             author=request.user.username, items=items_in_offer)
+            
+            return HttpResponseRedirect('/thanks/')
 
     else:
         form = MakeOfferForm(user_id = request.user.id)
@@ -154,6 +165,7 @@ def makeOffer(request, item_id):
         else:
             items_in_offer = list()
             for i in selected_items:
+                #wholeItem = get_object_or_404( GenericItem, pk = i )
                 wholeItem = GenericItem.objects.get(pk=i)
                 partialitem = ItemInOffer(itemTitle=wholeItem.title, value=wholeItem.value, item=wholeItem)
                 items_in_offer.append(partialitem)

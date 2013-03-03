@@ -60,6 +60,7 @@ class Category(models.Model):
 
 class GenericItem(Document):
     owner_id = IntField(required=True)
+    owner_username = StringField(max_length=70, required=True)
     title = StringField(max_length=70, required=True)
     description = StringField(max_length=140, required=True)
     value = IntField()
@@ -94,6 +95,7 @@ class Offer(EmbeddedDocument):
     author = StringField(max_length=70, required=True)
     items = ListField(EmbeddedDocumentField('ItemInOffer'))
     accepted = BooleanField()
+    datetime_made = DateTimeField()
 
     def __unicode__(self):
         return self.title

@@ -39,10 +39,11 @@ class ModelFormCameras(DocumentForm):
 
 class MakeOfferForm(forms.Form):
     itemsToOffer = forms.ModelMultipleChoiceField \
-        (widget=forms.CheckboxSelectMultiple(),queryset=Category.objects.none())
+        (queryset=Category.objects.none(), required=True)
     
     title = forms.CharField(max_length = 100)
 
     def __init__(self, user_id):
         super(MakeOfferForm, self).__init__()
-        self.fields['itemsToOffer'].queryset = GenericItem.objects.filter(owner_id = user_id)
+        self.fields['itemsToOffer'].queryset =\
+         GenericItem.objects.filter(owner_id = user_id)
