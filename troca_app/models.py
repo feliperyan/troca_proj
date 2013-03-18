@@ -67,6 +67,14 @@ class GenericItem(Document):
     location = GeoPointField()
     offers = ListField(EmbeddedDocumentField('Offer'))
 
+    #Used to check and alert users if they have already made an offer to this item.
+    def hasAlreadyMadeOffer(self, user_id):
+        for o in self.offers:
+            if o.author_id == user_id:
+                return True
+
+        return False
+
     def __unicode__(self):
         return self.title
 
@@ -76,7 +84,6 @@ class GenericItem(Document):
         db_table = 'generic_item'
         allow_inheritance = True
 
-        
 
 class ItemInOffer(EmbeddedDocument):
     itemTitle = StringField(max_length=70, required=True)
@@ -90,9 +97,9 @@ class ItemInOffer(EmbeddedDocument):
         app_label = 'troca_app'
 
 class Offer(EmbeddedDocument):
-    title = StringField(max_length=70, required=True)
-    author_id = IntField(required=True)
-    author = StringField(max_length=70, required=True)
+    title = StringField(max_length=70, required=False)
+    author_id = IntField(required=False)
+    author = StringField(max_length=70, required=False)
     items = ListField(EmbeddedDocumentField('ItemInOffer'))
     accepted = BooleanField()
     datetime_made = DateTimeField()
@@ -100,8 +107,7 @@ class Offer(EmbeddedDocument):
     def __unicode__(self):
         return self.title
 
-    class Meta:
-        app_label = 'troca_app'
+    _meta = {}
 
 
 class Muffin(GenericItem):

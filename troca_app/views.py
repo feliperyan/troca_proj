@@ -157,6 +157,8 @@ def makeOffer(request, item_id):
 
         #import pdb; pdb.set_trace()
 
+        offer_title = request.POST.get('offer_title')
+
         if len(selected_items) < 1:
             return render(request, 'make_offer.html', {
                 'wantedItem': wantedItem,'myItems': myItems, 'error':'Must select an item.'
@@ -170,7 +172,7 @@ def makeOffer(request, item_id):
                 partialitem = ItemInOffer(itemTitle=wholeItem.title, value=wholeItem.value, item=wholeItem)
                 items_in_offer.append(partialitem)
 
-            offer = Offer(title='An offer', author_id=request.user.id, author=request.user.username, items=items_in_offer)
+            offer = Offer(title=offer_title, author_id=request.user.id, author=request.user.username, items=items_in_offer)
 
             #import pdb; pdb.set_trace()
 
@@ -182,7 +184,9 @@ def makeOffer(request, item_id):
     else:
         
         return render(request, 'make_offer.html', {
-            'wantedItem': wantedItem,'myItems': myItems
+            'wantedItem': wantedItem,
+            'myItems': myItems,
+            'hasMadeOffer': wantedItem.hasAlreadyMadeOffer(request.user.id)
         })
 
 @login_required
@@ -213,8 +217,32 @@ class ItemsForLoggedUser(ListView):
 
 
 
+def testEmbeddedDocumentForm(request, item_id):
+    wantedItem = GenericItem.objects.get(pk=item_id)
 
+    if request.POST:
+        
+        #import ipdb; ipdb.set_trace();
+        
+        #This line is done so we can alter the Dict:
+        data = request.POST.copy()
 
+        form = TestOfferForm(parent_document=wantedItem, data=data)
+        form.data['author_id'] = request.user.id
+        form.data['author'] = request.user.username
+        
+        if form.is_valid():    
+            form.save()
 
+        return HttpResponseRedirect('/thanks/')
+
+    else:
+        form = TestOfferForm( user_id=request.user.id, parent_document=wantedItem)
+        #form = TestOfferForm(parent_document=wantedItem)
+        
+        return render(request, 'testEmbeddedDocumentForm.html', {
+            'form': form,
+            'wantedItem': wantedItem
+        })
 
 

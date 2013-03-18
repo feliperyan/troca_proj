@@ -5,6 +5,10 @@
 	<h3>Must select at least 1 item to offer.</h3>
 {% endif %}
 
+{% if hasMadeOffer %}
+	<h3>You have already made an offer for this item. New offers replace old ones!</h3>
+{% endif %}
+
 {% if wantedItem.owner_id != user.id %}
 
 	<div id="offer_container">
@@ -18,6 +22,7 @@
 
 		{% if myItems %}
 			<form action="." method="post"> {% csrf_token %}
+				<p> Title for the offer: <input type="text" name="offer_title"> </input> </p>
 
 				<div id="items_offered">	
 					<h3> Your items available for offer </h3>

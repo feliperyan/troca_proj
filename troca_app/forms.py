@@ -1,8 +1,10 @@
 from django import forms
+from django.forms import ModelMultipleChoiceField
 from troca_app.models import *
 from django.forms import ModelForm
 
 from mongodbforms import DocumentForm
+from mongodbforms import EmbeddedDocumentForm
 
 class FormGenericItem(forms.Form):
     title = forms.CharField(max_length=100)
@@ -37,13 +39,36 @@ class ModelFormCameras(DocumentForm):
 
 # Bloody "objects" object from the GenericItem model, which inherits from Document and not models.Model 
 
-class MakeOfferForm(forms.Form):
-    itemsToOffer = forms.ModelMultipleChoiceField \
-        (queryset=Category.objects.none(), required=True)
+# class MakeOfferForm(forms.Form):
+#     itemsToOffer = forms.ModelMultipleChoiceField \
+#         (queryset=Category.objects.none(), required=True)
     
-    title = forms.CharField(max_length = 100)
+#     title = forms.CharField(max_length = 100)
 
-    def __init__(self, user_id):
-        super(MakeOfferForm, self).__init__()
-        self.fields['itemsToOffer'].queryset =\
+#     def __init__(self, user_id):
+#         super(MakeOfferForm, self).__init__()
+#         self.fields['itemsToOffer'].queryset =\
+#          GenericItem.objects.filter(owner_id = user_id)
+
+class SelectMultipleItemsField(ModelMultipleChoiceField):
+    def prepare_value(self, value):
+        pass
+        #return super(ModelMultipleChoiceField, self).prepare_value(value)
+
+
+class TestOfferForm(EmbeddedDocumentForm):
+
+    class Meta:
+        document = Offer
+        embedded_field_name = 'offers' 
+        fields = ['title', 'author', 'author_id']
+
+    items = SelectMultipleItemsField \
+        (queryset=GenericItem.objects.filter(owner_id=0), widget=forms.CheckboxSelectMultiple, required=True)
+
+    def __init__(self, user_id=None, parent_document=None, data=None):
+        super(TestOfferForm, self).__init__(parent_document, data)
+        self.fields['items'].queryset =\
          GenericItem.objects.filter(owner_id = user_id)
+
+
