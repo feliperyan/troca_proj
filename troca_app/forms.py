@@ -52,8 +52,26 @@ class ModelFormCameras(DocumentForm):
 
 class SelectMultipleItemsField(ModelMultipleChoiceField):
     def prepare_value(self, value):
-        pass
-        #return super(ModelMultipleChoiceField, self).prepare_value(value)
+        if hasattr(value, '_meta'):
+            if self.to_field_name:
+                return value.serializable_value(self.to_field_name)
+            else:
+                return value.pk
+        
+        return super(SelectMultipleItemsField, self).prepare_value(value)
+
+    def clean(self, value):
+        #import ipdb; ipdb.set_trace();
+
+        littleItems = list()
+        
+        for pk in value:
+            wholeItem = GenericItem.objects.get(pk=pk)
+            partialItem = ItemInOffer(itemTitle=wholeItem.title, value=wholeItem.value, item=wholeItem)
+            littleItems.append(partialItem)
+
+        return littleItems
+
 
 
 class TestOfferForm(EmbeddedDocumentForm):
@@ -61,7 +79,7 @@ class TestOfferForm(EmbeddedDocumentForm):
     class Meta:
         document = Offer
         embedded_field_name = 'offers' 
-        fields = ['title', 'author', 'author_id']
+        fields = ['title', 'items']
 
     items = SelectMultipleItemsField \
         (queryset=GenericItem.objects.filter(owner_id=0), widget=forms.CheckboxSelectMultiple, required=True)
@@ -70,5 +88,8 @@ class TestOfferForm(EmbeddedDocumentForm):
         super(TestOfferForm, self).__init__(parent_document, data)
         self.fields['items'].queryset =\
          GenericItem.objects.filter(owner_id = user_id)
+
+
+
 
 

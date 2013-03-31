@@ -25,7 +25,7 @@
 				<p>Last 3 Offers:</p>				
 					<ul>
 					{% for o in i.offers|slice:":3" %}
-						<li> Offer: {{ o.title }} by <a href="#">{{ o.author }} </a></li>
+						<li> {{ o.title }} by <a href="#">{{ o.author }} </a> - <a href="#">View</a> </li>
 					{% endfor %}
 					</ul>
 				<p>See All offers</p>

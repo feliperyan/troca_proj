@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django_facebook.models import BaseFacebookProfileModel
 
 
+
 class TrocaUserProfile(BaseFacebookProfileModel):
     '''
     From django_facebook
@@ -97,12 +98,13 @@ class ItemInOffer(EmbeddedDocument):
         app_label = 'troca_app'
 
 class Offer(EmbeddedDocument):
-    title = StringField(max_length=70, required=False)
+    title = StringField(max_length=70, required=True)
     author_id = IntField(required=False)
     author = StringField(max_length=70, required=False)
     items = ListField(EmbeddedDocumentField('ItemInOffer'))
     accepted = BooleanField()
-    datetime_made = DateTimeField()
+    datetime_made = DateTimeField(default=datetime.datetime.now)
+    slug = StringField(max_length=70, required=False)
 
     def __unicode__(self):
         return self.title

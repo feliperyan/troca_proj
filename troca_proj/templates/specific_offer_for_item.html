@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2> Offer for {{ item.title }} </h2>
+
+	{% if offer %}
+		<div id="offers">				
+			{{ offer.title }} by <a href="#">{{ o.author }} </a>
+			<ul>
+				{% for i in offer.items %}
+					<li> <a href="{% url detail i.item.id %}" > {{ i.itemTitle }} </a> </li>
+				{% endfor %}
+			</ul>		
+		</div>
+	{% endif %}
+
+
+{% endblock %}
+

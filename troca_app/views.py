@@ -13,6 +13,7 @@ from django.utils import simplejson
 
 from django.shortcuts import get_object_or_404
 
+from django.template.defaultfilters import slugify
 
 def categories(request):
     return render(request, 'select_categories.html', )
@@ -119,32 +120,6 @@ def add_item(request, category):
         'category': category,
     } )
 
-@login_required
-def makeOfferWithForm(request, item_id):
-    wantedItem = GenericItem.objects.get(pk=item_id)
-
-    if request.method == 'POST':
-
-        form = MakeOfferForm(request.POST)
-        if form.is_valid():
-            d = form.cleaned_data
-
-            
-
-            offer = Offer(title=d['title'], author_id=request.user.id,\
-             author=request.user.username, items=items_in_offer)
-            
-            return HttpResponseRedirect('/thanks/')
-
-    else:
-        form = MakeOfferForm(user_id = request.user.id)
-
-    
-    return render(request, 'make_offer_with_form.html', {
-        'wantedItem': wantedItem,'form': form
-    })
-
-
 
 @login_required
 def makeOffer(request, item_id):
@@ -215,26 +190,26 @@ class ItemsForLoggedUser(ListView):
         return GenericItem.objects.filter(owner_id = the_id)
 
 
-
-
 def testEmbeddedDocumentForm(request, item_id):
     wantedItem = GenericItem.objects.get(pk=item_id)
 
-    if request.POST:
+    if request.POST: 
         
-        #import ipdb; ipdb.set_trace();
-        
-        #This line is done so we can alter the Dict:
-        data = request.POST.copy()
+        form = TestOfferForm(parent_document=wantedItem, data=request.POST)
 
-        form = TestOfferForm(parent_document=wantedItem, data=data)
-        form.data['author_id'] = request.user.id
-        form.data['author'] = request.user.username
-        
         if form.is_valid():    
+            ofr = form.save(commit=False)
+            ofr.author = request.user.username
+            ofr.author_id = request.user.id
+            ofr.slug = slugify(ofr.title)
             form.save()
+            return HttpResponseRedirect('/thanks/')
+        else:
+            return render(request, 'testEmbeddedDocumentForm.html', {
+            'form': form,
+            'wantedItem': wantedItem
+        })
 
-        return HttpResponseRedirect('/thanks/')
 
     else:
         form = TestOfferForm( user_id=request.user.id, parent_document=wantedItem)
@@ -244,5 +219,39 @@ def testEmbeddedDocumentForm(request, item_id):
             'form': form,
             'wantedItem': wantedItem
         })
+
+
+def offers_for_item(request, item_id):
+    wantedItem = GenericItem.objects.get(pk=item_id)
+
+    return render(request, 'all_offers_for_item.html', {
+            'item': wantedItem
+    })
+
+
+
+
+def specific_offer(request, item_id, offer_title_slug):
+    wantedItem = GenericItem.objects.get(pk=item_id)
+    
+    ofr = None
+
+    if not wantedItem:
+        raise Http404
+    else:
+        for o in wantedItem.offers:
+            if offer_title_slug == o.slug:
+                ofr = o
+
+    if not ofr:
+        raise Http404     
+
+    return render(request, 'specific_offer_for_item.html', {
+            'offer': ofr,
+            'item': wantedItem
+    })    
+
+
+
 
 

@@ -37,7 +37,11 @@ urlpatterns = patterns('',
 
     #url(r'^items/(?P<item_id>\w+)/make_offer/$', makeOffer, name='make_offer'),
     #url(r'^items/(?P<item_id>\w+)/make_offer/$', makeOfferWithForm, name='make_offer'),
-    url(r'^items/(?P<item_id>\w+)/make_offer/$', testEmbeddedDocumentForm, name='make_offer'),
+    url(r'^make_offer/(?P<item_id>\w+)/$', testEmbeddedDocumentForm, name='make_offer'),
+
+    url(r'^offers/(?P<item_id>\w+)/$', offers_for_item, name='offers_for_item'),
+    url(r'^offers/(?P<item_id>\w+)/(?P<offer_title_slug>[-\w]+)/$', specific_offer, name='specific_offer'),
+
 
     url(r'^facebook/', include('django_facebook.urls')),
     #Don't add this line if you use django registration or userena for registration and auth.
