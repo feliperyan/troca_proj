@@ -79,7 +79,7 @@ class DJFileField(BaseField):
 
         if not value._committed and value is not None:
             value.save(value.name, value)
-            return value.path
+            return value.name
 
         return value.name    
 
