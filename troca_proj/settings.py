@@ -9,7 +9,7 @@ TEMPLATES_PATH = os.path.join(SITE_ROOT, 'templates')
 
 MEDIA_ROOT = MEDIA_PATH 
 MEDIA_URL = '/media/'
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(SITE_ROOT, '../staticfiles')
 STATIC_URL = '/static/'
 
 # Additional locations of static files
