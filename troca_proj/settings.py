@@ -23,6 +23,9 @@ if os.environ.has_key('AWS_ACCESS_KEY_ID'):
     DEFAULT_FILE_STORAGE = 's3_folder_storage.s3.DefaultStorage'
     STATICFILES_STORAGE = 's3_folder_storage.s3.StaticStorage'
     
+    DEFAULT_S3_PATH = "media"
+    STATIC_S3_PATH = "static"
+
     MEDIA_ROOT = '/media/'
     MEDIA_URL = '//s3.amazonaws.com/trocaeuitems/media/' 
     STATIC_ROOT = 'static'
