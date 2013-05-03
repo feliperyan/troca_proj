@@ -29,7 +29,7 @@ if os.environ.has_key('AWS_ACCESS_KEY_ID'):
     STATIC_URL = '//s3.amazonaws.com/trocaeuitems/static/' 
     ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
-    
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
@@ -181,7 +181,7 @@ INSTALLED_APPS = [
      'django.contrib.admin',
      'mongonaut',
      'storages',
-     'django-s3-folder-storage',
+     's3_folder_storage',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 ]
