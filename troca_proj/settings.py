@@ -48,9 +48,9 @@ if os.environ.has_key('AWS_ACCESS_KEY_ID'):
     STATIC_S3_PATH = "static"
 
     MEDIA_ROOT = '/media/'
-    MEDIA_URL = '//s3.amazonaws.com/trocaeuitems/media/' 
+    MEDIA_URL = 'https://s3.amazonaws.com/trocaeuitems/media/' 
     STATIC_ROOT = 'static'
-    STATIC_URL = '//s3.amazonaws.com/trocaeuitems/static/' 
+    STATIC_URL = 'https://s3.amazonaws.com/trocaeuitems/static/' 
     ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 
