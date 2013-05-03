@@ -14,7 +14,7 @@
 	<div class="box col2" style="margin:5px; padding:5px; background:#CCCCCC">
 		
 		<a href="{% url detail i.id %}"> 
-			<img src="/media/{{i.img}}" width="280" height="280"/>
+			<img src="{{MEDIA_URL}}{{i.img}}" width="280" height="280"/>
 		</a>
 		<div style="width: 280px;">
 		<p>
