@@ -2,16 +2,6 @@
 
 {% block content %}
 
-<div>
-	{% if user.get_profile.image %}
-		<img src="/media/{{ user.get_profile.image.url }}" width=100 height=100 />
-	{% else %}
-		<img src="#" width=100 height=100 />
-	{% endif %}
-
-</div>
-
-
 <h2> Your listed items: </h2>
 
 {% if myItems %}

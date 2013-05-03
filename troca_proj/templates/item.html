@@ -5,7 +5,7 @@
 <h2> TEST of Item Form </h2>
 
 
-<form action="/add_item/{{ category }}" method="post">
+<form action="/add_item/{{ category }}" enctype="multipart/form-data" method="post">
 	{% csrf_token %}
 	
 	{% for f in form  %}            

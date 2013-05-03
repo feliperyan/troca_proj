@@ -11,12 +11,34 @@ FACEBOOK_API_KEY = '112921768860216'
 FACEBOOK_APP_ID = '112921768860216'
 FACEBOOK_APP_SECRET = '32c7334cbf6811abdf6d8579e59c0cac'
 
+AWS_ACCESS_KEY_ID = 'AKIAJQWT2VDXZR2OVOCA'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_STORAGE_BUCKET_NAME = 'trocaeuitems'
 
-# Add the 1st forward slash to get rid of the /accounts/yaddayadda
-LOGIN_REDIRECT_URL = '/my_items/'
+if os.environ.has_key('AWS_ACCESS_KEY_ID'):
+    AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+    AWS_STORAGE_BUCKET_NAME = 'trocaeuitems'
 
-DIR  = os.path.abspath(os.path.dirname(__file__))
+    DEFAULT_FILE_STORAGE = 's3_folder_storage.s3.DefaultStorage'
+    STATICFILES_STORAGE = 's3_folder_storage.s3.StaticStorage'
+    
+    MEDIA_ROOT = '/media/'
+    MEDIA_URL = '//s3.amazonaws.com/trocaeuitems/media/' 
+    STATIC_ROOT = 'static'
+    STATIC_URL = '//s3.amazonaws.com/trocaeuitems/static/' 
+    ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
+    
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
+LOGIN_URL = '/accounts/signin/'
+LOGOUT_URL = '/accounts/signout/'
+
+FACEBOOK_REGISTRATION_BACKEND = 'django_facebook.registration_backends.UserenaBackend'
+AUTH_PROFILE_MODULE = 'troca_app.TrocaUserProfile'
+ANONYMOUS_USER_ID = -1
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -25,12 +47,13 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
-#DATABASE_ROUTERS = ['troca_proj.routers.AuthRouter']
+# FELIPE: Dont use gravatar as I dont wanna send peoples email addresses
+# unencrypted.
+USERENA_MUGSHOT_GRAVATAR = False
 
 MANAGERS = ADMINS
 
 DBNAME = 'mongo_db'
-#mongoengine.connect(DBNAME)
 
 # FELIPE: Handling either local MongoDB for dev or Heroku's MongoLab MongoDB.
 regex = re.compile(r'^mongodb\:\/\/(?P<username>[_\w]+):(?P<password>[\w]+)@(?P<host>[\.\w]+):(?P<port>\d+)/(?P<database>[_\w]+)$')
@@ -49,18 +72,6 @@ if not os.environ.has_key('DATABASE_URL'):
     os.environ['DATABASE_URL'] = 'postgres://localhost/troca_nonrel'
     
 DATABASES = {'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))}
-
-# DATABASES = {
-#    'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': 'relational_db',
-#         'USER': '',
-#         'PASSWORD': '',
-#         'HOST': '',
-#         'PORT': ''
-#     },
-# }
-
 
 
 # Local time zone for this installation. Choices can be found here:
@@ -88,12 +99,12 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_URL = '/media/'
+MEDIA_ROOT = MEDIA_PATH 
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -150,7 +161,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 
-    os.path.join( DIR, 'templates' )
+    TEMPLATES_PATH
 )
 
 
@@ -162,9 +173,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'troca_app',
+    'userena',
+    'guardian',
+    'easy_thumbnails',
     'django_facebook',
     # Uncomment the next line to enable the admin:
      'django.contrib.admin',
+     'mongonaut',
+     'storages',
+     'django-s3-folder-storage',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 ]
@@ -174,10 +191,12 @@ INSTALLED_APPS = [
 #AUTH_PROFILE_MODULE = 'django_facebook.FacebookProfile'
 # NOTE: THIS PROFILE MODEL IS ACTUALLY IN MY OWN APP, I JUST NAMED IT
 # LIKE THIS SO IT'D BE GROUPED WITH THE OTHER PROFILE STUFF!!!
-AUTH_PROFILE_MODULE = 'django_facebook.TrocaUserProfile'
+#AUTH_PROFILE_MODULE = 'django_facebook.TrocaUserProfile'
 
 AUTHENTICATION_BACKENDS = (
-    'django_facebook.auth_backends.FacebookBackend',
+    'userena.backends.UserenaAuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
+    #'django_facebook.auth_backends.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -200,23 +219,25 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
+    
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(message)s'
         },
+    },
+
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'        
+        }
+    },
+    
+    'loggers': {
+        'troca': {
+            'handlers': ['console'],
+            'level': 'DEBUG'
+        }
     }
 }

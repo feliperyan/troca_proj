@@ -22,9 +22,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url( r'^$', index),
     url( r'^thanks/$', thanks),
-    
-    url( r'^accounts/login/$', login, {'template_name': 'login.html'} ),
-    url( r'^accounts/logout/$', logout, {'next_page': '/'} ),
+    (r'^accounts/', include('userena.urls')),
+    #url( r'^accounts/login/$', login, {'template_name': 'login.html'} ),
+    #url( r'^accounts/logout/$', logout, {'next_page': '/'} ),
 
     #url( r'^my_items/$', login_required(ItemsForLoggedUser.as_view()) ),
     url( r'^my_items/$', myProfile, name='myProfile' ),
@@ -46,8 +46,14 @@ urlpatterns = patterns('',
     url(r'^facebook/', include('django_facebook.urls')),
     #Don't add this line if you use django registration or userena for registration and auth.
     url(r'^accounts/', include('django_facebook.auth_urls')), 
+
+    url(r'^testImage/', testImage, name='testImage'), 
+
+    (r'^mongonaut/', include('mongonaut.urls')),
+
 )
 
+from troca_proj import settings
 if settings.DEBUG:
     # static files (images, css, javascript, etc.)
     urlpatterns += patterns('',

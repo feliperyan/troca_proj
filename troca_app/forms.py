@@ -2,6 +2,7 @@ from django import forms
 from django.forms import ModelMultipleChoiceField
 from troca_app.models import *
 from django.forms import ModelForm
+from django.forms import ImageField
 
 from mongodbforms import DocumentForm
 from mongodbforms import EmbeddedDocumentForm
@@ -11,15 +12,16 @@ class FormGenericItem(forms.Form):
     description = forms.CharField(max_length=100)
     value = forms.IntegerField()
     
-
-    
 # Don't think I can use ModelForms with a Model object that inherits from Document
 # and not models.Model ...
 
 class ModelFormGenericItem(DocumentForm):
-   class Meta:
-       document = GenericItem
-       fields = ('title', 'value', 'description')
+    class Meta:
+        document = GenericItem
+        fields = ('title', 'value', 'description', 'img')
+
+    img = forms.ImageField(widget=forms.ClearableFileInput)
+
 
 
 class ModelFormMuffin(DocumentForm):
@@ -90,6 +92,9 @@ class TestOfferForm(EmbeddedDocumentForm):
          GenericItem.objects.filter(owner_id = user_id)
 
 
+class TestImageForm(forms.Form):
+    title = forms.CharField(max_length=100)
+    img = forms.ImageField(widget=forms.ClearableFileInput)
 
 
 

@@ -79,22 +79,23 @@ def add_item(request, category):
     if request.method == 'POST':        
         
         if category == 'Muffins':
-            form = ModelFormMuffin(request.POST)        
+            form = ModelFormMuffin(request.POST, request.FILES)        
         
         elif category == 'Cameras':
-            form = ModelFormCameras(request.POST)        
+            form = ModelFormCameras(request.POST, request.FILES)        
         
         else:        
-            form = ModelFormGenericItem(request.POST)
+            form = ModelFormGenericItem(request.POST, request.FILES)
 
         #form = ModelFormGenericItem(request.POST)
 
+        #import ipdb; ipdb.set_trace()
         if form.is_valid():
-            #process the data in form.cleaned_data
 
             instance = form.save(commit = False)
             instance.owner_id = request.user.id
             instance.owner_username = request.user.username
+            
             instance.save()
             
             return HttpResponseRedirect('/thanks/')
@@ -119,6 +120,12 @@ def add_item(request, category):
         'form': form,
         'category': category,
     } )
+
+
+def handle_uploaded_file(f):
+    with open('some/file/name.txt', 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
 
 
 @login_required
@@ -251,7 +258,23 @@ def specific_offer(request, item_id, offer_title_slug):
             'item': wantedItem
     })    
 
+def testImage(request):
+    
+    if request.POST:
+        #import ipdb; ipdb.set_trace()
+        form = TestImageForm(request.POST, request.FILES) 
+        
+        if form.is_valid():
+            instance = ImageTest()
+            instance.title = form.cleaned_data['title']
+            instance.foto = request.FILES['img']
+            instance.save()
 
+            return HttpResponseRedirect('/thanks/')
+
+    else:
+        form = TestImageForm()
+        return render(request, 'testImage.html', { 'form': form })
 
 
 

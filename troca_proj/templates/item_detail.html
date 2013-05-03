@@ -4,6 +4,10 @@
 
 <h2> <a href="{% url make_offer item.id %}" > Make offer </a>  </h2>
 
+{% if item.img %}
+	<img src="/media/{{item.img}}" width="300" height="300" />
+{% endif %}
+
 <h3>Title: {{ item.title }} </h3>
 <h3> Owner: {{ owner.username }} </h3>
 <h3>Value: ${{ item.value }} </h3>

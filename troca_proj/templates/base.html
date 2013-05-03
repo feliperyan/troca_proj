@@ -22,12 +22,12 @@
 		<div>
 			{% if user.is_authenticated %}
 				<p style="float: right;">
-					<a style="float: right;" href="/accounts/logout">Logout</a>
+					<a style="float: right;" href="/accounts/signout">Logout</a>
 				</p>
-				<h3> Hi {{user.first_name}}! </h3>		
+				<h3> Hi {{user.username}}! </h3>		
 			{% else %}
 				<p style="float: right;">
-					<a href="/accounts/login">Login</a>
+					<a href="/accounts/signin">Login</a>
 				</p>
 				<h3> Not logged in </h3>
 			{% endif %}
@@ -47,7 +47,7 @@
 		
 		<hr>
 		<footer>
-			<p> © Felipe Ryan 2012 </p>
+			<p> © Sabiá 2013 | In Sydney and can code? Join us! <a href="#">info+at+troca.eu</a> </p>
 		</footer>
 	
 	</div>	

@@ -1,24 +1,24 @@
-#from django.db import models
 from mongoengine import *
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import *
+from django.db.models import datetime
 
 import os
 from django.contrib.auth.models import User
 from django_facebook.models import BaseFacebookProfileModel
 
+from custom_fields import DJFileField
 
+from userena.models import UserenaBaseProfile
 
-class TrocaUserProfile(BaseFacebookProfileModel):
+class TrocaUserProfile(BaseFacebookProfileModel, UserenaBaseProfile):
     '''
     From django_facebook
     '''
     user = models.OneToOneField('auth.User')
-    image = models.ImageField(blank=True, null=True, upload_to='newprofiles', max_length=255)
+    image = models.ImageField(blank=True, null=True, upload_to='profile_pics', max_length=255)
 
-    class Meta:
-        app_label = 'django_facebook'
+    
 
 #Make sure we create a MyCustomProfile when creating a User
 from django.db.models.signals import post_save
@@ -31,7 +31,7 @@ post_save.connect(create_facebook_profile, sender=User)
 
 
 class Category(models.Model):
-    categoryTitle = CharField(max_length=100, )
+    categoryTitle = models.CharField(max_length=100, )
     parentCategory = models.ForeignKey('self', null=True, blank=True, related_name='subs')
 
     def __unicode__(self):
@@ -58,7 +58,6 @@ class Category(models.Model):
 
 
 
-
 class GenericItem(Document):
     owner_id = IntField(required=True)
     owner_username = StringField(max_length=70, required=True)
@@ -67,6 +66,8 @@ class GenericItem(Document):
     value = IntField()
     location = GeoPointField()
     offers = ListField(EmbeddedDocumentField('Offer'))
+    img = DJFileField(upload_to = 'ups')
+
 
     #Used to check and alert users if they have already made an offer to this item.
     def hasAlreadyMadeOffer(self, user_id):
@@ -117,5 +118,10 @@ class Muffin(GenericItem):
 
 class Camera(GenericItem):
     brand = StringField(max_length=70)
+
+
+class ImageTest(Document):
+    title = StringField(max_length=70, required=True)
+    foto = DJFileField(upload_to = 'ups')
 
 

@@ -1,16 +1,48 @@
 {% extends "base.html" %}
 
+{%block page_specific_script%}
+	<script type="text/javascript" src="{{ STATIC_URL }}jquery.masonry.js"></script>
+{%endblock%}
 
 {% block content %}
 
 <h2> Newest Items </h2>
 
-{% for i in Items  %}            
-	<div id="item_listing">
-		<h3> <a href="{% url detail i.id %}" > {{ i.title }} </a> by <a href="#"> {{ i.owner_username }} </a> </h3>	
-	</div>
+<div id="container" class="clearfix masonry">
 
+{% for i in Items  %}            
+	<div class="box col2" style="margin:5px; padding:5px; background:#CCCCCC">
+		
+		<a href="{% url detail i.id %}"> 
+			<img src="/media/{{i.img}}" width="280" height="280"/>
+		</a>
+		<div style="width: 280px;">
+		<p>
+			<a href="{% url detail i.id %}"> {{ i.title }} </a> by 
+			<a href="/accounts/{{ i.owner_username }}"> {{ i.owner_username }} </a>	
+		</p>
+		</div>
+	</div>
 {% endfor %}
+
+</div>
+
+<script>
+	$(document).ready(function() {
+
+		// Initialize Masonry
+		$('#container').masonry({
+			//columnWidth: 140,
+			itemSelector: '.box',
+			//isFitWidth: true,
+			//isAnimated: !Modernizr.csstransitions
+		}).imagesLoaded(function() {
+			$(this).masonry('reload');
+		});
+
+	});
+</script>
+
 
 {% endblock %}
 
