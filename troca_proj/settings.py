@@ -2,6 +2,7 @@
 import os
 import mongoengine
 import re
+import gunicorn
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 MEDIA_PATH = os.path.join(SITE_ROOT, '../media')
@@ -162,18 +163,16 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'gunicorn',
     'troca_app',
     'userena',
     'guardian',
     'easy_thumbnails',
     'django_facebook',
-    # Uncomment the next line to enable the admin:
-     'django.contrib.admin',
-     'mongonaut',
-     'storages',
-     's3_folder_storage',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
+    'django.contrib.admin',
+    'mongonaut',
+    'storages',
+    's3_folder_storage',
 ]
 
 # The next 2 lists are stuff added from django_facebook
