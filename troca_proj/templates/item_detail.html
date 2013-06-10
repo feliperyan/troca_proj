@@ -43,8 +43,8 @@
 		}
 		else {
 			$("#vote_message").text('You already voted!');
-			$("#vote_message").css('visibility','visible');	
 		}
+		$("#vote_message").css('visibility','visible');	
 	}
 
 	$(document).ready(function() {
@@ -102,7 +102,7 @@
 	</h2>
 
 	{% if item.img %}
-		<img src="/media/{{item.img}}" width="300" height="300" />
+		<img src="{{MEDIA_URL}}{{item.img}}" width="300" height="300" />
 	{% endif %}
 
 	<h3>Title: {{ item.title }} </h3>

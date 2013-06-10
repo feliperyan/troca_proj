@@ -25,14 +25,9 @@ def categories(request):
 
 @login_required
 def voteAjax(request, item_id, vote):
-    #try:
     wantedItem = GenericItem.objects.get(pk=item_id)
-    #except GenericItem.DoesNotExist:
-    #    raise Http404
-    
-    #import ipdb; ipdb.set_trace();
-
     point = 0
+    
     if vote != 'up' and vote != 'down':
         raise Http404
     else:
@@ -41,10 +36,14 @@ def voteAjax(request, item_id, vote):
         else:
             point = 1
 
+    logger.info('VOTE: %s' % vote)
+
     if request.is_ajax():
         if wantedItem.hasAlreadyVoted(request.user.id):
+            logger.info('VOTE: not_ok')
             m = {'answer': 'not_ok'}
         else:
+            logger.info('VOTE: ok')
             v = Vote(author_id=request.user.id, direction=point)
             wantedItem.votes.append(v)
             wantedItem.save()
