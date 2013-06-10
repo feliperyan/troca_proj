@@ -52,7 +52,7 @@
 		$("#votedown").on({ click:function() {
 			console.log("/vote/{{item.id}}/down");
 			var voted = $.post(
-				"/vote/{{item.id}}/down",'',
+				"/vote/{{item.id}}/down",new Date(),
 				function(data){
 					console.log(data);
 					updateVotes(data);
@@ -63,7 +63,7 @@
 		$("#voteup").on({ click:function() {
 			console.log("/vote/{{item.id}}/up");
 			var voted = $.post(
-				"/vote/{{item.id}}/up",'',
+				"/vote/{{item.id}}/up",new Date(),
 				function(data){
 					console.log(data); 
 					updateVotes(data);
