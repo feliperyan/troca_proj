@@ -15,6 +15,10 @@
 		</div>
 	{% endif %}
 
+<p> 
+	<a href="{% url decision_offer item.id offer.slug 'accept' %}" class="btn btn-success">Accept!</a> 
+	<a href="{% url decision_offer item.id offer.slug 'reject' %}" class="btn btn-danger">Reject!</a> 
+</p>
 
 {% endblock %}
 

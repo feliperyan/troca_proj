@@ -15,10 +15,19 @@
 				<p>Last 3 Offers:</p>				
 					<ul>
 					{% for o in i.offers|slice:":3" %}
-						<li> {{ o.title }} by <a href="#">{{ o.author }} </a> - <a href="#">View</a> </li>
+						<li>
+						{% if o.status == 'accepted' %}
+							<i class="icon-ok"></i>&nbsp;<span class="label label-info">{{o.status}}</span> - 
+						{% elif o.status == 'rejected' %}  
+							<i class="icon-remove"></i>&nbsp;<span class="label label-info">{{o.status}}</span> - 
+						{% else %}  
+							<span class="label label-info">Pending</span> -
+						{% endif %}
+								
+								<strong>{{ o.title }}</strong> by <a href="#">{{ o.author }} </a> - <a href="{% url specific_offer i.id o.slug %}">View</a> </li>
 					{% endfor %}
 					</ul>
-				<p>See All offers</p>
+				<p><a href="{% url offers_for_item i.id %}">See All offers</a></p>
 				</div>
 			{% endif %}
 
@@ -42,7 +51,13 @@
 			{% for o in i.offers %}
 				{% if  o.author_id == user.id %}
 					<div id="offers">            
-						<p> Offer: {{ o.title }} </p>
+						<p> Title: <strong>{{ o.title }}</strong></p>
+						<p>Status:  
+							{% if o.status == 'pending' %} Pending 
+							{% elif o.status == 'rejected' %}<i class="icon-remove"></i> Rejected 
+							{% else %} <i class="icon-ok"></i> Accepted!
+							{% endif %}
+						</p>
 						<p>Your items offered:</p>
 						<ul>
 							{% for its in o.items %}							

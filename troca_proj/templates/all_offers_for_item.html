@@ -5,15 +5,14 @@
 <h2> Offers for {{ item.title }} </h2>
 
 	{% if item.offers %}
-		<p>See All offers</p>
 		<div id="offers">				
 			<ul>
 			{% for o in item.offers %}
 				<li> 
-					{{ o.title }} by <a href="#">{{ o.author }} </a>
+					<strong>{{ o.title }}</strong> by <a href="#">{{ o.author }}</a> - <a href="{% url specific_offer item.id o.slug %}">View</a>  </li>
 					<ul>
 						{% for i in o.items %}
-							<li> <a href="{% url detail i.item.id %}" > {{ i.itemTitle }} </a> </li>
+							<li> <a target="_blank" href="{% url detail i.item.id %}" > {{ i.itemTitle }} </a> </li>
 						{% endfor %}
 					</ul>
 

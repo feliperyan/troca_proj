@@ -6,19 +6,56 @@ from django.http import HttpResponse
 from models import *
 from forms import *
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect, csrf_exempt
 from django.http import Http404
 from django.views.generic import ListView
-
 from django.utils import simplejson
-
 from django.shortcuts import get_object_or_404
-
 from django.template.defaultfilters import slugify
+
+from bson.objectid import ObjectId
+
+import logging
+logger = logging.getLogger('troca')
+
 
 def categories(request):
     return render(request, 'select_categories.html', )
 
 
+@login_required
+def voteAjax(request, item_id, vote):
+    #try:
+    wantedItem = GenericItem.objects.get(pk=item_id)
+    #except GenericItem.DoesNotExist:
+    #    raise Http404
+    
+    #import ipdb; ipdb.set_trace();
+
+    point = 0
+    if vote != 'up' and vote != 'down':
+        raise Http404
+    else:
+        if vote == 'down':
+            point = -1
+        else:
+            point = 1
+
+    if request.is_ajax():
+        if wantedItem.hasAlreadyVoted(request.user.id):
+            m = {'answer': 'not_ok'}
+        else:
+            v = Vote(author_id=request.user.id, direction=point)
+            wantedItem.votes.append(v)
+            wantedItem.save()
+            m = {'answer': 'ok', 'total':wantedItem.countVotes()}
+        
+        m = simplejson.dumps(m)
+    
+    else:
+        raise Http404
+
+    return HttpResponse(m, mimetype='application/json')
 
 def getAjaxCategories(request):
 
@@ -50,13 +87,10 @@ def getAjaxCategories(request):
     #time.sleep(3)
     return HttpResponse(message, mimetype='application/json')
 
-
-
 def index(request):
+    logger.info('*** - index view - ***')
     items = GenericItem.objects.all()
     return render(request, 'index.html', {'Items': items})
-
-
 
 def detail(request, item_id):
     try:
@@ -66,12 +100,8 @@ def detail(request, item_id):
         raise Http404
     return render(request, 'item_detail.html', {'item': item, 'owner': owner})
 
-
-
 def thanks(request):
     return render(request, 'thanks.html', {})
-
-
 
 @login_required
 def add_item(request, category):
@@ -121,17 +151,17 @@ def add_item(request, category):
         'category': category,
     } )
 
-
 def handle_uploaded_file(f):
     with open('some/file/name.txt', 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
 
-
+# EmbeddedForm MakeOffer has replaced this - Will it be good enought to stay?!
 @login_required
 def makeOffer(request, item_id):
     
     wantedItem = GenericItem.objects.get(pk=item_id)
+
     myItems = GenericItem.objects.filter(owner_id = request.user.id)
 
     if request.method == 'POST':
@@ -174,31 +204,108 @@ def makeOffer(request, item_id):
 @login_required
 def myProfile(request):
     myItems = GenericItem.objects.filter(owner_id = request.user.id)
-    
+
 
     # Example of a RAW MongoDB query:
     #itemsWithMyOffers = GenericItem.the_objects.raw_query({ 'offers.author_id': request.user.id })
     itemsWithMyOffers = GenericItem.objects(__raw__={ 'offers.author_id': request.user.id })
 
-
     return render(request, 'myItems.html', {
             'myItems': myItems,'myOffers': itemsWithMyOffers
     })
 
-#Could not use standard @login_required decorator since this is a ClassBased GenericView...
-class ItemsForLoggedUser(ListView):
+@login_required
+def decision_offer(request, item_id, offer_title_slug, response):
+    owner = request.user.id
+    wantedItem = GenericItem.objects.get(pk=item_id)
+    ofr = None
+
+    import ipdb; ipdb.set_trace()
+
+    #Only item owner can accept offers of course:
+    if owner != wantedItem.owner_id or wantedItem is None:
+        return render(request, 'info.html', {'info': 'You don\'t own that item and can not accept offers for it!' })
+
+    ofr = wantedItem.get_offer_by_slug(offer_title_slug)
+    if not ofr:
+        return render(request, 'info.html', {'info': 'Offer Not found!' })
+
+    if response == 'reject' and ofr.status == 'pending':
+        ofr.status = 'rejected'
+        wantedItem.save()
+        return render(request, 'info.html', {'info': 'offer Rejected!' })
+    elif ofr.status != 'pending':
+        return render(request, 'info.html', {'info': 'This offer has already been dealt with.' })
+
+    else:
+        # First make this item temporarily unavailable.
+        # Going down to pymongo level in order to use findAndModify
+        locked = acquire_pending_lock(wantedItem)
+        if not locked:
+            info = 'Could not accept any offers for this item right now!'
+            return render(request, 'info.html', {'info': info} )
+
+        # Second check that items in the offer being accepted are available 
+        locked = []
+        failed_to_lock = None
+        for i in ofr.items:
+            got_lock = acquire_pending_lock(i.item)
+            if got_lock:
+                locked.append(i.item)
+            else:
+                failed_to_lock = i.item
+
+        if failed_to_lock:
+            info = 'One of the items offered is not available!'
+            for i in locked:
+                i.available = 'available'
+                i.save()
+            return render(request, 'info.html', {'info': info} )
+
+        for o in wantedItem.offers:
+            o.status = 'rejected'
+
+        ofr.status = 'accepted'
+        wantedItem.available = 'traded'
+        wantedItem.save()
+        
+        return render(request, 'info.html', {'info': 'Accepted!'} )
+
+# Using PyMongo 
+def acquire_pending_lock(generic_item):
+    raw = GenericItem._get_collection()
+    result = raw.find_and_modify(
+        query = { '_id': generic_item.id, 'available':'available' },
+        update = { '$set':{'available': 'locked'} }
+        )
     
-    context_object_name = 'myItems'
-    template_name = 'myItems.html'
+    s = ''
+    if result is None:
+        s = '*** Could not acquire pending lock for: %s id:%s'\
+         %(generic_item.title, generic_item.id)
+    else:
+        s = '*** Acquired pending lock for: %s id:%s' %(generic_item.title, generic_item.id)
 
-    #Overloading the get_queryset method of ListView
-    def get_queryset(self):
-        the_id = self.request.user.id
-        return GenericItem.objects.filter(owner_id = the_id)
+    logger.info(s)
 
+    return result
 
+@login_required
 def testEmbeddedDocumentForm(request, item_id):
     wantedItem = GenericItem.objects.get(pk=item_id)
+
+    if wantedItem.available != 'available':
+        return render(request, 'info.html', {'info': 'Item not available!' })
+
+    myItems = GenericItem.objects.filter(owner_id=request.user.id)
+    if myItems:
+        for i in myItems:
+            for o in i.offers:
+                for x in o.items:
+                    if x.item == wantedItem:
+                        s = 'This item is part of an offer made to one of your items,'+\
+                        ' please respond to that offer first!'
+                        return render(request, 'info.html', {'info': s })
 
     if request.POST: 
         
@@ -227,16 +334,12 @@ def testEmbeddedDocumentForm(request, item_id):
             'wantedItem': wantedItem
         })
 
-
 def offers_for_item(request, item_id):
     wantedItem = GenericItem.objects.get(pk=item_id)
 
     return render(request, 'all_offers_for_item.html', {
             'item': wantedItem
     })
-
-
-
 
 def specific_offer(request, item_id, offer_title_slug):
     wantedItem = GenericItem.objects.get(pk=item_id)

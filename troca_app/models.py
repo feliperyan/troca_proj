@@ -56,7 +56,10 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
         #app_label = 'relational'
 
-
+class Vote(EmbeddedDocument):
+    author_id = IntField(required=True)
+    direction = IntField(required=True)
+    date_voted = DateTimeField(default=datetime.datetime.now)
 
 class GenericItem(Document):
     owner_id = IntField(required=True)
@@ -64,18 +67,47 @@ class GenericItem(Document):
     title = StringField(max_length=70, required=True)
     description = StringField(max_length=140, required=True)
     value = IntField()
-    location = GeoPointField()
+    geo_location = GeoPointField()
+    text_location = StringField(max_length=128, required=False)
+    date_added = DateTimeField(default=datetime.datetime.now)
     offers = ListField(EmbeddedDocumentField('Offer'))
     img = DJFileField(upload_to = 'ups')
+    available = StringField(max_length=70, default='available')
+    votes = ListField(EmbeddedDocumentField('Vote'))
 
+    def hasAlreadyVoted(self, user_id):
+        for v in self.votes:
+            if v.author_id == user_id:
+                return True
+        return False
+
+    #Tally up the votes:
+    def countVotes(self):
+        sum = 0
+        for v in self.votes:
+            sum += v.direction
+        return sum
 
     #Used to check and alert users if they have already made an offer to this item.
     def hasAlreadyMadeOffer(self, user_id):
         for o in self.offers:
             if o.author_id == user_id:
                 return True
-
         return False
+
+    # Called when this item is no longer available:
+    def reject_all_offers(reason):
+        for o in self.offers:
+            if reason:
+                o.status = 'reason'
+            else:
+                o.status = 'rejected'
+
+    def get_offer_by_slug(self, slug_title):
+        for o in self.offers:
+            if slug_title == o.slug:
+                return o
+        return None
 
     def __unicode__(self):
         return self.title
@@ -103,7 +135,10 @@ class Offer(EmbeddedDocument):
     author_id = IntField(required=False)
     author = StringField(max_length=70, required=False)
     items = ListField(EmbeddedDocumentField('ItemInOffer'))
-    accepted = BooleanField()
+    
+    # Change to Status = ChoiceField?
+    status = StringField(max_length=70, default='pending')
+    
     datetime_made = DateTimeField(default=datetime.datetime.now)
     slug = StringField(max_length=70, required=False)
 
