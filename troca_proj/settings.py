@@ -4,6 +4,8 @@ import mongoengine
 import re
 import gunicorn
 
+from local_settings import *
+
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 MEDIA_PATH = os.path.join(SITE_ROOT, '../media')
 TEMPLATES_PATH = os.path.join(SITE_ROOT, 'templates')
@@ -28,13 +30,7 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-FACEBOOK_API_KEY = '112921768860216'
-FACEBOOK_APP_ID = '112921768860216'
-FACEBOOK_APP_SECRET = '32c7334cbf6811abdf6d8579e59c0cac'
 
-AWS_ACCESS_KEY_ID = 'AKIAJQWT2VDXZR2OVOCA'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'trocaeuitems'
 
 if os.environ.has_key('AWS_ACCESS_KEY_ID'):
     AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']

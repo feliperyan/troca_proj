@@ -12,6 +12,7 @@ from django.views.generic import ListView
 from django.utils import simplejson
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from bson.objectid import ObjectId
 
@@ -87,9 +88,19 @@ def getAjaxCategories(request):
     return HttpResponse(message, mimetype='application/json')
 
 def index(request):
-    logger.info('*** - index view - ***')
-    items = GenericItem.objects.all()
-    return render(request, 'index.html', {'Items': items})
+    #logger.info('*** - index view - ***')
+    item_list = GenericItem.objects.order_by('date_added')
+    paginator = Paginator(item_list, 2)
+
+    page = request.GET.get('page')
+    try:
+        items = paginator.page(page)
+    except PageNotAnInteger:
+        items = paginator.page(1)
+    except EmptyPage:
+        items = paginator.page(paginator.num_pages)
+
+    return render(request, 'index.html', {'items': items})
 
 def detail(request, item_id):
     try:
