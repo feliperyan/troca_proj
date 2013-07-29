@@ -67,13 +67,15 @@ class GenericItem(Document):
     title = StringField(max_length=70, required=True)
     description = StringField(max_length=140, required=True)
     value = IntField()
-    geo_location = GeoPointField()
+    geo_location = PointField(required=False)
     text_location = StringField(max_length=128, required=False)
     date_added = DateTimeField(default=datetime.datetime.now)
     offers = ListField(EmbeddedDocumentField('Offer'))
     img = DJFileField(upload_to = 'ups')
     available = StringField(max_length=70, default='available')
     votes = ListField(EmbeddedDocumentField('Vote'))
+
+    meta = { 'allow_inheritance': True }        
 
     def hasAlreadyVoted(self, user_id):
         for v in self.votes:
@@ -112,12 +114,8 @@ class GenericItem(Document):
     def __unicode__(self):
         return self.title
 
-    class Meta:
-        abstract = False
-        app_label = 'troca_app'
-        db_table = 'generic_item'
-        allow_inheritance = True
-
+class Bike(GenericItem):
+    model = StringField(max_length=70, required=True)
 
 class ItemInOffer(EmbeddedDocument):
     itemTitle = StringField(max_length=70, required=True)
@@ -146,14 +144,6 @@ class Offer(EmbeddedDocument):
         return self.title
 
     _meta = {}
-
-
-class Muffin(GenericItem):
-    baked_on = DateTimeField()
-
-class Camera(GenericItem):
-    brand = StringField(max_length=70)
-
 
 class ImageTest(Document):
     title = StringField(max_length=70, required=True)

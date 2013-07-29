@@ -13,12 +13,12 @@
 {% for i in items  %}            
 	<div class="box col2" style="margin:5px; padding:5px; background:#CCCCCC">
 		
-		<a href="{% url detail i.id %}"> 
+		<a href="{% url "detail" i.id %}"> 
 			<img src="{{MEDIA_URL}}{{i.img}}" width="280" height="280"/>
 		</a>
 		<div style="width: 280px;">
 			<p>
-				<a href="{% url detail i.id %}"> {{ i.title }} </a> by 
+				<a href="{% url "detail" i.id %}"> {{ i.title }} </a> by 
 				<a href="/accounts/{{ i.owner_username }}"> {{ i.owner_username }} </a>			
 			</p>
 			<p>Votes {{i.countVotes}}</p>

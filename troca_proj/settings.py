@@ -50,7 +50,7 @@ if os.environ.has_key('AWS_ACCESS_KEY_ID'):
     ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
 LOGIN_URL = '/accounts/signin/'

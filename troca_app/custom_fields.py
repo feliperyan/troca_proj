@@ -9,6 +9,8 @@ from mongoengine.base import BaseField
 from mongoengine.connection import get_db, DEFAULT_CONNECTION_NAME
 from django.utils.encoding import force_text
 
+import logging
+logger = logging.getLogger('troca')
 
 class DJFileField(BaseField):
     
@@ -76,6 +78,11 @@ class DJFileField(BaseField):
     # The value I'm getting here is a FileFiled and it all looks
     # pretty good at this stage even though I'm not 100% sure
     # of what's going on.
+        #logger.info('to_mongo: %s' % value)
+        #import ipdb; ipdb.set_trace()
+
+        if not isinstance(value, FieldFile):
+            return value
 
         if not value._committed and value is not None:
             value.save(value.name, value)

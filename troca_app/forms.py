@@ -3,37 +3,52 @@ from django.forms import ModelMultipleChoiceField
 from troca_app.models import *
 from django.forms import ModelForm
 from django.forms import ImageField
+from django.forms import CharField
 
 from mongodbforms import DocumentForm
 from mongodbforms import EmbeddedDocumentForm
+
+from mongodbforms import ListField
+from mongodbforms.widgets import ListWidget
+
+from django.core.validators import EMPTY_VALUES
+from django.forms.util import ErrorList
+
+import re
 
 class FormGenericItem(forms.Form):
     title = forms.CharField(max_length=100)
     description = forms.CharField(max_length=100)
     value = forms.IntegerField()
-    
-# Don't think I can use ModelForms with a Model object that inherits from Document
-# and not models.Model ...
+
+class PointFieldForm(CharField):
+    def clean(self, value):
+        clean_data = value.split(',')
+
+        #import ipdb; ipdb.set_trace()
+
+        if value in EMPTY_VALUES and self.required:
+            raise forms.ValidationError(self.error_messages['required'])
+        elif value in EMPTY_VALUES and not self.required:
+            return None
+
+        if len(clean_data) != 2:
+            forms.ValidationError('Incorrect number of parameters. Expecting: lon, lat')
+
+        
+        lat = float(clean_data[0])
+        lon = float(clean_data[1])
+        clean_data = {'type': 'Point', 'coordinates': [lat, lon]}
+
+        return clean_data
 
 class ModelFormGenericItem(DocumentForm):
     class Meta:
         document = GenericItem
-        fields = ('title', 'value', 'description', 'img')
+        fields = ('title', 'value', 'description', 'img', 'geo_location')
 
     img = forms.ImageField(widget=forms.ClearableFileInput)
-
-
-
-class ModelFormMuffin(DocumentForm):
-    class Meta:
-        document = Muffin
-        fields = ('title', 'value', 'description')
-
-
-class ModelFormCameras(DocumentForm):
-    class Meta:
-        document = Camera
-        fields = ('title', 'value', 'description', 'brand')
+    geo_location = PointFieldForm(required=False)
 
 
 # Here we use a dummy `queryset`, because ModelChoiceField
@@ -73,7 +88,6 @@ class SelectMultipleItemsField(ModelMultipleChoiceField):
             littleItems.append(partialItem)
 
         return littleItems
-
 
 
 class TestOfferForm(EmbeddedDocumentForm):
