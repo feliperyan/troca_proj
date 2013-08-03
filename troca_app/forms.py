@@ -8,7 +8,6 @@ from mongodbforms import DocumentForm
 from mongodbforms import EmbeddedDocumentForm
 
 from mongodbforms import ListField
-from mongodbforms.widgets import ListWidget
 
 from django.core.validators import EMPTY_VALUES
 from django.forms.util import ErrorList
