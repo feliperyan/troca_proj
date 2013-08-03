@@ -6,12 +6,9 @@ from django.forms import CharField
 
 from mongodbforms import DocumentForm
 from mongodbforms import EmbeddedDocumentForm
-
 from mongodbforms import ListField
-
 from django.core.validators import EMPTY_VALUES
 from django.forms.util import ErrorList
-
 import re
 
 class PointFieldForm(CharField):
