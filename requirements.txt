@@ -12,10 +12,10 @@ easy-thumbnails==1.2
 gunicorn==0.17.2
 ipdb==0.7
 ipython==0.13.1
+mongodbforms==0.2.2
 mongoengine==0.8.3
 psycopg2==2.4.6
 pymongo==2.5.2
 readline==6.2.4.1
 simplejson==2.6.2
 wsgiref==0.1.2
-git+git://github.com/feliperyan/django-mongodbforms.git

@@ -3,5 +3,5 @@
 relational_db
 .DS_Store
 media
-staticfile
+staticfiles
 local_settings.py
