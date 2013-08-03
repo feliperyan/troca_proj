@@ -8,7 +8,7 @@
 
 	{% for i in myItems  %}            
 		<div id="item_listing">
-			<h3> <a href="{% url detail i.id %}" > {{ i.title }} </a>  </h3>		
+			<h3> <a href="{% url "detail" i.id %}" > {{ i.title }} </a>  </h3>		
 			
 			{% if i.offers %}
 				<div id="offers">
@@ -27,7 +27,7 @@
 								<strong>{{ o.title }}</strong> by <a href="#">{{ o.author }} </a> - <a href="{% url specific_offer i.id o.slug %}">View</a> </li>
 					{% endfor %}
 					</ul>
-				<p><a href="{% url offers_for_item i.id %}">See All offers</a></p>
+				<p><a href="{% url "offers_for_item" i.id %}">See All offers</a></p>
 				</div>
 			{% endif %}
 
@@ -46,7 +46,7 @@
 
 	{% for i in myOffers  %}
 	
-		<h3>Offer for item: <a href="{% url detail i.id %}" > {{ i.title }} </a></h3>            
+		<h3>Offer for item: <a href="{% url "detail" i.id %}" > {{ i.title }} </a></h3>            
 		<div id="offers_listing">								
 			{% for o in i.offers %}
 				{% if  o.author_id == user.id %}
@@ -61,7 +61,7 @@
 						<p>Your items offered:</p>
 						<ul>
 							{% for its in o.items %}							
-								<li><a href="{% url detail its.item.id %}"> {{its.itemTitle}} </a> </li>
+								<li><a href="{% url "detail" its.item.id %}"> {{its.itemTitle}} </a> </li>
 							{% endfor %}
 						</ul>	
 					</div>

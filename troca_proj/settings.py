@@ -4,8 +4,6 @@ import mongoengine
 import re
 import gunicorn
 
-from local_settings import *
-
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 MEDIA_PATH = os.path.join(SITE_ROOT, '../media')
 TEMPLATES_PATH = os.path.join(SITE_ROOT, 'templates')
@@ -30,7 +28,9 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-
+# If we detect that the AWS environment var is set, we must be running on Heroku
+# therefore start aquiring vars from the env. Otherwise, import the local_settings.py
+# module.
 
 if os.environ.has_key('AWS_ACCESS_KEY_ID'):
     AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
@@ -49,8 +49,22 @@ if os.environ.has_key('AWS_ACCESS_KEY_ID'):
     STATIC_URL = 'https://s3.amazonaws.com/trocaeuitems/static/' 
     ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
+    FACEBOOK_API_KEY = os.environ['FACEBOOK_API_KEY']
+    FACEBOOK_APP_ID = os.environ['FACEBOOK_API_KEY']
+    FACEBOOK_APP_SECRET = os.environ['FACEBOOK_APP_SECRET']
+
+    EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+
+else:
+    from local_settings import *
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'info@troca.eu'
+EMAIL_PORT = '587'
+EMAIL_SUBJECT_PREFIX = 'Troca.eu' # The default is [Django] so you may want to replace it.
+EMAIL_USE_TLS = True
 
 LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
 LOGIN_URL = '/accounts/signin/'

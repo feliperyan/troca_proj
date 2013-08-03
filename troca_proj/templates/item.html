@@ -1,5 +1,33 @@
 {% extends "base.html" %}
 
+{%block page_specific_script%}
+<script>
+	
+	function showpos(position){
+		pos = position;
+		lat=position.coords.latitude
+		lon=position.coords.longitude
+		console.log('Your position: '+lat+','+lon);
+		$("#id_geo_location").val(lon + ',' + lat);
+		text = $("#okparagraph").html();
+		$("#okparagraph").html(text + ' ' + '<span class="icon-ok" ></span>');
+	}
+
+	function errorpos(positionError){
+		console.log(positionError); 
+	}
+
+	$(document).ready(function() {
+ 		
+ 		$("#geoButton").on({ click:function() {
+ 			navigator.geolocation.getCurrentPosition(showpos, errorpos, {timeout:5000});
+		}});
+
+
+	});
+</script>
+{% endblock %}
+
 {% block content %}
 
 <h2> TEST of Item Form </h2>
@@ -8,14 +36,24 @@
 <form action="/add_item/{{ category }}" enctype="multipart/form-data" method="post">
 	{% csrf_token %}
 	
-	{% for f in form  %}            
-		<div class="fieldWrapper">
-			{{ f.errors }}
-			{{ f.label_tag }} {{ f }}
-		</div>
+	{% for f in form  %}
+		{% if not f.is_hidden %} 
+			<div class="fieldWrapper">
+				{{ f.errors }}
+				{{ f.label_tag }} {{ f }}
+			</div>
+		{% else %}
+			{{ f }}
+		{% endif %}
+	
 	{% endfor %}
 
-	<p><input type="submit" value="SUBMIT" /> </p>
+		<p id="okparagraph">
+			<input id="geoButton" type="button" value="Add Location" class="btn btn-small btn-info"/>
+		</p>
+		
+
+	<p><input type="submit" value="Submit" class="btn btn-large btn-primary" style="margin-top: 10pt;" /> </p>
 
 </form>
 

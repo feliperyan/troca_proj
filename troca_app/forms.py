@@ -1,7 +1,6 @@
 from django import forms
 from django.forms import ModelMultipleChoiceField
 from troca_app.models import *
-from django.forms import ModelForm
 from django.forms import ImageField
 from django.forms import CharField
 
@@ -15,11 +14,6 @@ from django.core.validators import EMPTY_VALUES
 from django.forms.util import ErrorList
 
 import re
-
-class FormGenericItem(forms.Form):
-    title = forms.CharField(max_length=100)
-    description = forms.CharField(max_length=100)
-    value = forms.IntegerField()
 
 class PointFieldForm(CharField):
     def clean(self, value):
@@ -47,25 +41,8 @@ class ModelFormGenericItem(DocumentForm):
         document = GenericItem
         fields = ('title', 'value', 'description', 'img', 'geo_location')
 
-    img = forms.ImageField(widget=forms.ClearableFileInput)
-    geo_location = PointFieldForm(required=False)
-
-
-# Here we use a dummy `queryset`, because ModelChoiceField
-# see: http://stackoverflow.com/questions/4789466/populate-a-django-form-with-data-from-database-in-view
-
-# Bloody "objects" object from the GenericItem model, which inherits from Document and not models.Model 
-
-# class MakeOfferForm(forms.Form):
-#     itemsToOffer = forms.ModelMultipleChoiceField \
-#         (queryset=Category.objects.none(), required=True)
-    
-#     title = forms.CharField(max_length = 100)
-
-#     def __init__(self, user_id):
-#         super(MakeOfferForm, self).__init__()
-#         self.fields['itemsToOffer'].queryset =\
-#          GenericItem.objects.filter(owner_id = user_id)
+    img = forms.ImageField(widget=forms.ClearableFileInput, label='Image')
+    geo_location = PointFieldForm(required=False, widget=forms.HiddenInput)
 
 class SelectMultipleItemsField(ModelMultipleChoiceField):
     def prepare_value(self, value):
@@ -89,7 +66,6 @@ class SelectMultipleItemsField(ModelMultipleChoiceField):
 
         return littleItems
 
-
 class TestOfferForm(EmbeddedDocumentForm):
 
     class Meta:
@@ -104,7 +80,6 @@ class TestOfferForm(EmbeddedDocumentForm):
         super(TestOfferForm, self).__init__(parent_document, data)
         self.fields['items'].queryset =\
          GenericItem.objects.filter(owner_id = user_id)
-
 
 class TestImageForm(forms.Form):
     title = forms.CharField(max_length=100)

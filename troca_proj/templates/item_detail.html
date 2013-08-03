@@ -95,7 +95,7 @@
 	{%endif%}
 	<h2> 
 		{% if item.available == 'available' %}
-			<a href="{% url make_offer item.id %}" > Make offer </a>  
+			<a href="{% url "make_offer" item.id %}" > Make offer </a>  
 		{% else %}
 			Item unavailable!
 		{% endif %}
