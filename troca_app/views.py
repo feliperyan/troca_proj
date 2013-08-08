@@ -319,8 +319,8 @@ def testEmbeddedDocumentForm(request, item_id):
 
     if request.POST: 
         
-        form = TestOfferForm(parent_document=wantedItem, data=request.POST)
-
+        form = TestOfferForm( data=request.POST, parent_document=wantedItem)
+        
         if form.is_valid():    
             ofr = form.save(commit=False)
             ofr.author = request.user.username

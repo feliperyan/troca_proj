@@ -11,6 +11,8 @@ from django.core.validators import EMPTY_VALUES
 from django.forms.util import ErrorList
 import re
 
+from mongodbforms import DocumentMultipleChoiceField
+
 class PointFieldForm(CharField):
     def clean(self, value):
         clean_data = value.split(',')
@@ -40,15 +42,16 @@ class ModelFormGenericItem(DocumentForm):
     img = forms.ImageField(widget=forms.ClearableFileInput, label='Image')
     geo_location = PointFieldForm(required=False, widget=forms.HiddenInput)
 
-class SelectMultipleItemsField(ModelMultipleChoiceField):
-    def prepare_value(self, value):
-        if hasattr(value, '_meta'):
-            if self.to_field_name:
-                return value.serializable_value(self.to_field_name)
-            else:
-                return value.pk
+class SelectMultipleItemsField(DocumentMultipleChoiceField):
+#class SelectMultipleItemsField(ModelMultipleChoiceField):
+    # def prepare_value(self, value):
+    #     if hasattr(value, '_meta'):
+    #         if self.to_field_name:
+    #             return value.serializable_value(self.to_field_name)
+    #         else:
+    #             return value.pk
         
-        return super(SelectMultipleItemsField, self).prepare_value(value)
+    #     return super(SelectMultipleItemsField, self).prepare_value(value)
 
     def clean(self, value):
         #import ipdb; ipdb.set_trace();
@@ -67,15 +70,15 @@ class TestOfferForm(EmbeddedDocumentForm):
     class Meta:
         document = Offer
         embedded_field_name = 'offers' 
+        #fields = ['title']
         fields = ['title', 'items']
 
-    items = SelectMultipleItemsField \
-        (queryset=GenericItem.objects.filter(owner_id=0), widget=forms.CheckboxSelectMultiple, required=True)
+    items = SelectMultipleItemsField (queryset=GenericItem.objects.filter(owner_id=0), widget=forms.CheckboxSelectMultiple, required=True)
 
     def __init__(self, user_id=None, parent_document=None, data=None):
-        super(TestOfferForm, self).__init__(parent_document, data)
-        self.fields['items'].queryset =\
-         GenericItem.objects.filter(owner_id = user_id)
+        #import ipdb; ipdb.set_trace();
+        super(TestOfferForm, self).__init__(parent_document=parent_document, data=data)
+        self.fields['items'].queryset = GenericItem.objects.filter(owner_id = user_id)
 
 class TestImageForm(forms.Form):
     title = forms.CharField(max_length=100)
