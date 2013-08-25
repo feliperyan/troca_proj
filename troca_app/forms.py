@@ -10,6 +10,7 @@ from django.core.validators import EMPTY_VALUES
 from django.forms.util import ErrorList
 import re
 from mongodbforms import DocumentMultipleChoiceField
+from PIL import Image
 
 
 class PointFieldForm(CharField):
@@ -53,8 +54,14 @@ class ModelFormGenericItem(DocumentForm):
             if not image.name[-3:].lower() in ['jpg']:
                 raise forms.ValidationError(
                    "Your file extension was not recongized")
-        
+            try: 
+                Image.open(image)
+            except IOError:
+                raise forms.ValidationError(
+                   "Your file doesn't appear to be a real picture.")
+                
         return image
+
 
 class VehicleForm(DocumentForm):
     class Meta:
@@ -88,6 +95,7 @@ class SelectMultipleItemsField(DocumentMultipleChoiceField):
 
         return littleItems
 
+
 class TestOfferForm(EmbeddedDocumentForm):
 
     class Meta:
@@ -102,6 +110,7 @@ class TestOfferForm(EmbeddedDocumentForm):
         #import ipdb; ipdb.set_trace();
         super(TestOfferForm, self).__init__(parent_document=parent_document, data=data)
         self.fields['items'].queryset = GenericItem.objects.filter(owner_id = user_id)
+
 
 class TestImageForm(forms.Form):
     title = forms.CharField(max_length=100)
