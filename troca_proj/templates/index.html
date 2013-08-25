@@ -6,7 +6,25 @@
 
 {% block content %}
 
-<h2> Newest items </h2>
+	<form class="form-inline" action="/search/" method="get">
+		<div class="input-prepend">
+			<span class="add-on">Title</span>
+			<input name="title" class="span2" id="prependedInput" type="text" placeholder="Keywords...">				
+		</div>
+		
+		<select name="category">
+			<option value="abc"> All categories </option>
+			<option value="def"> Services </option>
+		</select>
+
+		<select name="geo" style="width:11em">
+			<option value="0"> Anywhere </option>
+			<option value="3"> Walking distance </option>
+			<option value="10"> Short bus ride </option>
+			<option value="200"> Road trip </option>
+		</select>
+		<button type="submit" class="btn">Search</button>
+	</form>
 
 <div id="container" class="clearfix masonry">
 
@@ -28,13 +46,23 @@
 
 </div>
 
-<div>
+
+<div class="pagination">
+	<ul>
 	{% if items.has_previous %}
-		<a href="?page={{ items.previous_page_number }}">previous page </a>
+		<a href="?{{queries.urlencode}}&amp;page={{ items.previous_page_number }}">Prev</a>
+	{% else %}
+		 &lt;&lt;
 	{% endif %}
-	Page {{items.number}} of {{ items.paginator.num_pages }}
+	{% for p in items.paginator.page_range %}
+    	<a href="?{{queries.urlencode}}&amp;page={{p}}"{% ifequal p page %} class="selected"{% endifequal %}>{{p}}</a>
+		{% empty %}
+    	<a href="?{{queries.urlencode}}&amp;page=1" class="selected">1</a>
+	{% endfor %}
 	{% if items.has_next %}
-		<a href="?page={{ items.next_page_number }}"> next page</a>
+		<a href="?{{queries.urlencode}}&amp;page={{ items.next_page_number }}"> Next </a>
+	{% else %}
+		&gt;&gt;
 	{% endif %}
 </div>
 

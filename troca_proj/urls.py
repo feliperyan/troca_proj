@@ -21,6 +21,8 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     url( r'^$', index),
+    url( r'^search/$', search),
+
     url( r'^thanks/$', thanks),
     (r'^accounts/', include('userena.urls')),
     #url( r'^accounts/login/$', login, {'template_name': 'login.html'} ),

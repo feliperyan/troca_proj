@@ -38,7 +38,7 @@ class Category(models.Model):
         oneUp = self.parentCategory
         printable = self.categoryTitle
         while oneUp:    
-            printable = oneUp.categoryTitle +'>' + printable
+            printable = oneUp.categoryTitle +' > ' + printable
             oneUp = oneUp.parentCategory
         
         return printable
@@ -47,7 +47,7 @@ class Category(models.Model):
         oneUp = self.parentCategory
         printable = self.categoryTitle
         while oneUp:    
-            printable = oneUp.categoryTitle +'>'+ printable
+            printable = oneUp.categoryTitle +' > '+ printable
             oneUp = oneUp.parentCategory
         
         return printable
@@ -114,7 +114,7 @@ class GenericItem(Document):
     def __unicode__(self):
         return self.title
 
-class Bike(GenericItem):
+class Vehicle(GenericItem):
     model = StringField(max_length=70, required=True)
 
 class ItemInOffer(EmbeddedDocument):

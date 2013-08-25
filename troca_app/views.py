@@ -102,6 +102,68 @@ def index(request):
 
     return render(request, 'index.html', {'items': items})
 
+def search(request):
+    title = None
+    geo = None
+    category = None
+    
+    context = {}
+
+    #Dealing with pagination for queries
+    #http://djangosnippets.org/snippets/1592/
+
+    q_no_page = request.GET.copy()
+    if q_no_page.has_key('page'):
+        del q_no_page['page']
+
+    queries = q_no_page
+
+    #Give us a result even if there is no search info:
+    item_list = GenericItem.objects.order_by('date_added')
+
+    if 'title' in request.GET and request.GET['title']:
+        title = request.GET['title']
+        if title == '':
+            title = None
+
+    if 'geo' in request.GET and request.GET['geo']:
+        geo = request.GET['geo']
+        if geo.isdigit:
+            geo = int(geo)
+            if geo == 0:
+                geo = None
+
+    if 'category' in request.GET and request.GET['category']:
+        category = request.GET['category']
+        if category == 'abc':
+            category = None
+
+    logger.info(title)
+    logger.info(geo)
+    logger.info(category)
+
+    if title is not None:
+        logger.info('searching for title:'+title)
+        item_list = GenericItem.objects(title__icontains=title).order_by('date_added')
+
+    # if title and category and geo:
+    #     items = GenericItem.objects(Q(geo_location__near=[37.769,40.123], \
+    #         geo_location__max_distance=100) & Q(title__icontains='4'))    
+
+    paginator = Paginator(item_list, 2)
+    page = request.GET.get('page')
+    try:
+        items = paginator.page(page)
+    except PageNotAnInteger:
+        items = paginator.page(1)
+    except EmptyPage:
+        items = paginator.page(paginator.num_pages)
+
+    return render(request, 'index.html', {'items': items, 'queries': queries})
+
+    #eos = GenericItem.objects(Q(geo_location__near=[37.769,40.123], \
+        #geo_location__max_distance=100) & Q(title__icontains='4'))
+
 def detail(request, item_id):
     try:
         item = GenericItem.objects.get(pk=item_id)
@@ -118,8 +180,8 @@ def add_item(request, category):
 
     if request.method == 'POST':        
         
-        if category == 'Muffins':
-            form = ModelFormMuffin(request.POST, request.FILES)        
+        if category == 'Vehicles':
+            form = VehicleForm(request.POST, request.FILES)        
         
         elif category == 'Cameras':
             form = ModelFormCameras(request.POST, request.FILES)        
@@ -127,9 +189,6 @@ def add_item(request, category):
         else:        
             form = ModelFormGenericItem(request.POST, request.FILES)
 
-        #form = ModelFormGenericItem(request.POST)
-
-        #import ipdb; ipdb.set_trace()
         if form.is_valid():
 
             instance = form.save(commit = False)
@@ -147,8 +206,8 @@ def add_item(request, category):
         if i.count() != 0:
             raise Http404
 
-        if category == 'Muffins':
-            form = ModelFormMuffin()
+        if category == 'Vehicles':
+            form = VehicleForm()
         
         elif category == 'Cameras':
             form = ModelFormCameras()

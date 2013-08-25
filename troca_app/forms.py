@@ -3,15 +3,14 @@ from django.forms import ModelMultipleChoiceField
 from troca_app.models import *
 from django.forms import ImageField
 from django.forms import CharField
-
 from mongodbforms import DocumentForm
 from mongodbforms import EmbeddedDocumentForm
 from mongodbforms import ListField
 from django.core.validators import EMPTY_VALUES
 from django.forms.util import ErrorList
 import re
-
 from mongodbforms import DocumentMultipleChoiceField
+
 
 class PointFieldForm(CharField):
     def clean(self, value):
@@ -34,6 +33,7 @@ class PointFieldForm(CharField):
 
         return clean_data
 
+
 class ModelFormGenericItem(DocumentForm):
     class Meta:
         document = GenericItem
@@ -41,6 +41,29 @@ class ModelFormGenericItem(DocumentForm):
 
     img = forms.ImageField(widget=forms.ClearableFileInput, label='Image')
     geo_location = PointFieldForm(required=False, widget=forms.HiddenInput)
+    
+    def clean_img(self):
+        cleaned_data = super(ModelFormGenericItem,self).clean()
+        image = cleaned_data.get("img")
+                
+        if image:
+            if image._size > 4*1024*1024:
+                raise forms.ValidationError(
+                   "Image Must be <4mb Less")
+            if not image.name[-3:].lower() in ['jpg']:
+                raise forms.ValidationError(
+                   "Your file extension was not recongized")
+        
+        return image
+
+class VehicleForm(DocumentForm):
+    class Meta:
+        document = Vehicle
+        fields = ('title', 'value', 'description', 'img', 'geo_location', 'model')
+
+    img = forms.ImageField(widget=forms.ClearableFileInput, label='Image')
+    geo_location = PointFieldForm(required=False, widget=forms.HiddenInput)
+
 
 class SelectMultipleItemsField(DocumentMultipleChoiceField):
 #class SelectMultipleItemsField(ModelMultipleChoiceField):

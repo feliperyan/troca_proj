@@ -5,3 +5,5 @@ relational_db
 media
 staticfiles
 local_settings.py
+.project
+.pydevproject
