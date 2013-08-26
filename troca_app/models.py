@@ -7,7 +7,7 @@ import os
 from django.contrib.auth.models import User
 from django_facebook.models import BaseFacebookProfileModel
 
-from custom_fields import DJFileField
+from custom_fields import DJFileField, LocalImageField
 
 from userena.models import UserenaBaseProfile
 
@@ -71,7 +71,7 @@ class GenericItem(Document):
     text_location = StringField(max_length=128, required=False)
     date_added = DateTimeField(default=datetime.datetime.now)
     offers = ListField(EmbeddedDocumentField('Offer'))
-    img = DJFileField(upload_to = 'ups')
+    img = LocalImageField(upload_to = 'ups')
     available = StringField(max_length=70, default='available')
     votes = ListField(EmbeddedDocumentField('Vote'))
 
