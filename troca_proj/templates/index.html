@@ -2,6 +2,57 @@
 
 {%block page_specific_script%}
 	<script type="text/javascript" src="{{ STATIC_URL }}jquery.masonry.js"></script>
+	
+<script>
+	function showpos(position){
+		pos = position;
+		lat=position.coords.latitude;
+		lon=position.coords.longitude;
+		console.log('Your position: '+lat+','+lon);
+		
+		$("#id_geo_lon").val(lon);
+		$("#id_geo_lat").val(lat);
+		
+		$("#search_but").text = 'Search';
+ 		$("#search_but").removeAttr('disabled', 'disabled');
+ 		
+ 		alert('Got location!');
+	}
+
+	function errorpos(err){
+		
+		console.log(err);
+		
+		if (err.code == 1) {
+    		alert('You said no!');
+  		}
+		if (err.code == 2) {
+    		alert('Couldn\'t get your position');
+  		}
+		if (err.code == 3) {
+    		alert('Ok that tooked too long.');
+  		}
+		
+		$("#search_but").text = 'Search';
+ 		$("#search_but").removeAttr('disabled', 'disabled');
+ 		$("#geo").val("0"); 
+	}
+
+	$(document).ready(function() {
+ 		
+ 		$("#geo").change(function() {
+ 			$("#search_but").text = 'Locating...';
+ 			$("#search_but").attr('disabled', 'disabled');
+ 			
+ 			navigator.geolocation.getCurrentPosition(showpos, errorpos, {timeout:5000});
+		});
+
+
+	});
+		
+</script>
+	
+	
 {%endblock%}
 
 {% block content %}
@@ -17,19 +68,25 @@
 			<option value="def"> Services </option>
 		</select>
 
-		<select name="geo" style="width:11em">
+		<select id="geo" name="geo" style="width:11em">
 			<option value="0"> Anywhere </option>
 			<option value="3"> Walking distance </option>
 			<option value="10"> Short bus ride </option>
 			<option value="200"> Road trip </option>
 		</select>
-		<button type="submit" class="btn">Search</button>
+		
+		<input id="id_geo_lon" name="lon" type="hidden">
+		<input id="id_geo_lat" name="lat" type="hidden">
+		
+		<button id="search_but" type="submit" class="btn btn-medium btn-primary">Search</button>
+		
 	</form>
 
 <div id="container" class="clearfix masonry">
 
 {% for i in items  %}            
-	<div class="box col2" style="margin:5px; padding:5px; background:#CCCCCC">
+	<div class="box col2" style="margin:5px; padding:5px; background:#FFFFFF; 
+	box-shadow: 0 2px 5px 0 rgba(0,0,0,0.5)">
 		
 		<a href="{% url "detail" i.id %}"> 
 			<img src="{{MEDIA_URL}}{{i.img}}" width="280" height="280"/>
@@ -39,7 +96,7 @@
 				<a href="{% url "detail" i.id %}"> {{ i.title }} </a> by 
 				<a href="/accounts/{{ i.owner_username }}"> {{ i.owner_username }} </a>			
 			</p>
-			<p>Votes {{i.countVotes}}</p>
+			<p>Votes {{i.countVotes}} | Offers {{i.offers|length}}</p>
 		</div>
 	</div>
 {% endfor %}
