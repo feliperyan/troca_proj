@@ -16,21 +16,25 @@
 		$("#search_but").text = 'Search';
  		$("#search_but").removeAttr('disabled', 'disabled');
 
- 		alert('Got location!');
+ 		text = $("#okparagraph").html();
+ 		$("#okparagraph").css('visibility','visible');
+		$("#okparagraph").html(text + ' ' + '<span class="icon-ok" ></span>');
 	}
 
 	function errorpos(err){
 		
 		console.log(err);
+		$("#okparagraph").css('visibility','visible');
 		
+		text = $("#okparagraph").html();
 		if (err.code == 1) {
-    		alert('You said no!');
+    		$("#okparagraph").html(text + ' ' + 'You said no!');
   		}
 		if (err.code == 2) {
-    		alert('Couldn\'t get your position');
+    		$("#okparagraph").html(text + ' ' + 'Couldn\'t get your position');
   		}
 		if (err.code == 3) {
-    		alert('Ok that tooked too long.');
+    		$("#okparagraph").html(text + ' ' + 'It\'s taking too long.');
   		}
 		
 		$("#search_but").text = 'Search';
@@ -79,6 +83,8 @@
 		<input id="id_geo_lat" name="lat" type="hidden">
 		
 		<button id="search_but" type="submit" class="btn btn-medium btn-primary">Search</button>
+		
+		<div id="okparagraph" class="label label-info" style="visibility:hidden"> </div>
 		
 	</form>
 
