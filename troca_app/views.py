@@ -23,7 +23,6 @@ logger = logging.getLogger('troca')
 def categories(request):
     return render(request, 'select_categories.html', )
 
-
 @login_required
 def voteAjax(request, item_id, vote):
     wantedItem = GenericItem.objects.get(pk=item_id)
@@ -90,7 +89,7 @@ def getAjaxCategories(request):
 def index(request):
     #logger.info('*** - index view - ***')
     item_list = GenericItem.objects.order_by('date_added')
-    paginator = Paginator(item_list, 2)
+    paginator = Paginator(item_list, 6)
 
     page = request.GET.get('page')
     try:
@@ -106,6 +105,8 @@ def search(request):
     title = None
     geo = None
     category = None
+    lat = None
+    lon = None
     
     context = {}
 
@@ -126,10 +127,17 @@ def search(request):
         if title == '':
             title = None
 
-    if 'geo' in request.GET and request.GET['geo']:
+    if 'geo' in request.GET and request.GET['geo'] and\
+    'lat' in request.GET and request.GET['lat'] and\
+    'lon' in request.GET and request.GET['lon']:
         geo = request.GET['geo']
-        if geo.isdigit:
+        lat = request.GET['lat']
+        lon = request.GET['lon']
+        
+        if geo.isdigit and lat.isdigit and lon.isdigit:
             geo = int(geo)
+            lat = float(lat)
+            lon = float(lon)
             if geo == 0:
                 geo = None
 
@@ -139,18 +147,23 @@ def search(request):
             category = None
 
     logger.info(title)
-    logger.info(geo)
     logger.info(category)
-
+    logger.info(geo)
+    logger.info(lon)
+    logger.info(lat)
+    
     if title is not None:
         logger.info('searching for title:'+title)
         item_list = GenericItem.objects(title__icontains=title).order_by('date_added')
+        
+    if geo is not None:
+        item_list = item_list.filter(geo_location__near=[lat,lon], geo_location__max_distance=geo)
 
     # if title and category and geo:
     #     items = GenericItem.objects(Q(geo_location__near=[37.769,40.123], \
     #         geo_location__max_distance=100) & Q(title__icontains='4'))    
 
-    paginator = Paginator(item_list, 2)
+    paginator = Paginator(item_list, 6)
     page = request.GET.get('page')
     try:
         items = paginator.page(page)

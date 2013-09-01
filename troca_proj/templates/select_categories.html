@@ -12,7 +12,7 @@
 		var text = '';
 		//console.log(cat);
 		$.each(data['items'], function(index, value) { 
-  			 text = text + '<p class="cat"><a href="#" class="ajax_click">' + value + '</a></p>'
+  			 text = text + '<p class="cat"><a href="#" class="ajax_click">' + $.trim(value) + '</a></p>';
 		});
 
 		//If the last category has been selected, text will be null, therefore user
@@ -26,7 +26,7 @@
 
 		var bread = '';
 		$.each(data['crumbs'], function(index, value) { 
-  			 bread = bread + '<span class="divider">&gt;</span><li class="cat"><a href="#" class="ajax_click">' + value + '</a></li>'
+  			 bread = bread + '<span class="divider"> &gt; </span><li class="cat"><a href="#" class="ajax_click">' + $.trim(value) + '</a></li>';
 		});
 
 		$("#breadcrumb_categories ul").html('');
@@ -44,7 +44,7 @@
 			}, 'json');
 
  		$(".ajax_click").on({ click:function() {
- 			var cat = $(this).text()
+ 			var cat = $(this).text();
  			console.log("1st event: "+cat);
 			$.get("/getCategories/", {category: cat} ,function(data){
 				//alert(data);
@@ -58,7 +58,7 @@
 	
 	function bindStuff(){
 		$(".ajax_click").on({ click:function() {
- 			var cat = $(this).text() 			
+ 			var cat = $(this).text(); 			
  			console.log("2nd event: "+cat);	
 			$.get("/getCategories/", {category: cat} ,function(data){
 				//alert(data);

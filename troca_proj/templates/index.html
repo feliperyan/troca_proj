@@ -9,13 +9,13 @@
 		lat=position.coords.latitude;
 		lon=position.coords.longitude;
 		console.log('Your position: '+lat+','+lon);
-		
+
 		$("#id_geo_lon").val(lon);
 		$("#id_geo_lat").val(lat);
-		
+
 		$("#search_but").text = 'Search';
  		$("#search_but").removeAttr('disabled', 'disabled');
- 		
+
  		alert('Got location!');
 	}
 
@@ -70,9 +70,9 @@
 
 		<select id="geo" name="geo" style="width:11em">
 			<option value="0"> Anywhere </option>
-			<option value="3"> Walking distance </option>
-			<option value="10"> Short bus ride </option>
-			<option value="200"> Road trip </option>
+			<option value="3000"> Walking distance </option>
+			<option value="15000"> Short bus ride </option>
+			<option value="200000"> Road trip </option>
 		</select>
 		
 		<input id="id_geo_lon" name="lon" type="hidden">
@@ -105,7 +105,7 @@
 
 
 <div class="pagination">
-	<ul>
+
 	{% if items.has_previous %}
 		<a href="?{{queries.urlencode}}&amp;page={{ items.previous_page_number }}">Prev</a>
 	{% else %}
