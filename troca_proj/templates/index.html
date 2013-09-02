@@ -18,23 +18,25 @@
 
  		text = $("#okparagraph").html();
  		$("#okparagraph").css('visibility','visible');
-		$("#okparagraph").html(text + ' ' + '<span class="icon-ok" ></span>');
+ 		$("#okparagraph").html('');
+		$("#okparagraph").html('Got location <span class="icon-ok" ></span>');
 	}
 
 	function errorpos(err){
 		
 		console.log(err);
 		$("#okparagraph").css('visibility','visible');
+		$("#okparagraph").html('');
 		
 		text = $("#okparagraph").html();
 		if (err.code == 1) {
-    		$("#okparagraph").html(text + ' ' + 'You said no!');
+    		$("#okparagraph").html('You said no!');
   		}
 		if (err.code == 2) {
-    		$("#okparagraph").html(text + ' ' + 'Couldn\'t get your position');
+    		$("#okparagraph").html('Couldn\'t get your position');
   		}
 		if (err.code == 3) {
-    		$("#okparagraph").html(text + ' ' + 'It\'s taking too long.');
+    		$("#okparagraph").html('It\'s taking too long.');
   		}
 		
 		$("#search_but").text = 'Search';

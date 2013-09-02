@@ -240,3 +240,9 @@ LOGGING = {
         }
     }
 }
+
+MONGONAUT_JQUERY = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
+MONGONAUT_TWITTER_BOOTSTRAP = STATIC_URL + "bootstrap/css/bootstrap.css"
+MONGONAUT_TWITTER_BOOTSTRAP_ALERT = STATIC_URL + "bootstrap/js/bootstrap.min.js"
+
+

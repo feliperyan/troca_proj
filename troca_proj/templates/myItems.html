@@ -24,7 +24,7 @@
 							<span class="label label-info">Pending</span> -
 						{% endif %}
 								
-								<strong>{{ o.title }}</strong> by <a href="#">{{ o.author }} </a> - <a href="{% url specific_offer i.id o.slug %}">View</a> </li>
+								<strong>{{ o.title }}</strong> by <a href="#">{{ o.author }} </a> - <a href="{% url 'specific_offer' i.id o.slug %}">View</a> </li>
 					{% endfor %}
 					</ul>
 				<p><a href="{% url "offers_for_item" i.id %}">See All offers</a></p>

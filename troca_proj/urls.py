@@ -11,6 +11,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^mongonaut/', include('mongonaut.urls')),
     # Examples:
     # url(r'^$', 'troca_proj.views.home', name='home'),
     # url(r'^troca_proj/', include('troca_proj.foo.urls')),
@@ -54,8 +55,6 @@ urlpatterns = patterns('',
     url(r'^accounts/', include('django_facebook.auth_urls')), 
 
     url(r'^testImage/', testImage, name='testImage'), 
-
-    (r'^mongonaut/', include('mongonaut.urls')),
 
 )
 

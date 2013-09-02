@@ -157,11 +157,10 @@ def search(request):
         item_list = GenericItem.objects(title__icontains=title).order_by('date_added')
         
     if geo is not None:
-        item_list = item_list.filter(geo_location__near=[lat,lon], geo_location__max_distance=geo)
+        item_list = item_list.filter(geo_location__near=[lon,lat], geo_location__max_distance=geo)
 
     # if title and category and geo:
-    #     items = GenericItem.objects(Q(geo_location__near=[37.769,40.123], \
-    #         geo_location__max_distance=100) & Q(title__icontains='4'))    
+    #     items = GenericItem.objects(Q(geo_location__near=[37.769,40.123],geo_location__max_distance=100) & Q(title__icontains='4'))    
 
     paginator = Paginator(item_list, 6)
     page = request.GET.get('page')
