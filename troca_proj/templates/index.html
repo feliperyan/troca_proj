@@ -2,63 +2,6 @@
 
 {%block page_specific_script%}
 	<script type="text/javascript" src="{{ STATIC_URL }}jquery.masonry.js"></script>
-	
-<script>
-	function showpos(position){
-		pos = position;
-		lat=position.coords.latitude;
-		lon=position.coords.longitude;
-		console.log('Your position: '+lat+','+lon);
-
-		$("#id_geo_lon").val(lon);
-		$("#id_geo_lat").val(lat);
-
-		$("#search_but").text = 'Search';
- 		$("#search_but").removeAttr('disabled', 'disabled');
-
- 		text = $("#okparagraph").html();
- 		$("#okparagraph").css('visibility','visible');
- 		$("#okparagraph").html('');
-		$("#okparagraph").html('Got location <span class="icon-ok" ></span>');
-	}
-
-	function errorpos(err){
-		
-		console.log(err);
-		$("#okparagraph").css('visibility','visible');
-		$("#okparagraph").html('');
-		
-		text = $("#okparagraph").html();
-		if (err.code == 1) {
-    		$("#okparagraph").html('You said no!');
-  		}
-		if (err.code == 2) {
-    		$("#okparagraph").html('Couldn\'t get your position');
-  		}
-		if (err.code == 3) {
-    		$("#okparagraph").html('It\'s taking too long.');
-  		}
-		
-		$("#search_but").text = 'Search';
- 		$("#search_but").removeAttr('disabled', 'disabled');
- 		$("#geo").val("0"); 
-	}
-
-	$(document).ready(function() {
- 		
- 		$("#geo").change(function() {
- 			$("#search_but").text = 'Locating...';
- 			$("#search_but").attr('disabled', 'disabled');
- 			
- 			navigator.geolocation.getCurrentPosition(showpos, errorpos, {timeout:5000});
-		});
-
-
-	});
-		
-</script>
-	
-	
 {%endblock%}
 
 {% block content %}
@@ -81,14 +24,23 @@
 			<option value="200000"> Road trip </option>
 		</select>
 		
-		<input id="id_geo_lon" name="lon" type="hidden">
-		<input id="id_geo_lat" name="lat" type="hidden">
+		{% if terms.lat and terms.lon %}
+			<input id="id_geo_lon" name="lon" type="hidden" value="{{terms.lon}}">
+			<input id="id_geo_lat" name="lat" type="hidden" value="{{terms.lat}}">
+		{% else %}
+			<input id="id_geo_lon" name="lon" type="hidden">
+			<input id="id_geo_lat" name="lat" type="hidden">
+		{% endif %}
 		
 		<button id="search_but" type="submit" class="btn btn-medium btn-primary">Search</button>
 		
 		<div id="okparagraph" class="label label-info" style="visibility:hidden"> </div>
 		
 	</form>
+	
+	{% if terms %}
+		<h2>Results for: {{ terms.title }} </h2>		
+	{% endif %}
 
 <div id="container" class="clearfix masonry">
 
@@ -99,12 +51,15 @@
 		<a href="{% url "detail" i.id %}"> 
 			<img src="{{MEDIA_URL}}{{i.img}}" width="280" height="280"/>
 		</a>
-		<div style="width: 280px;">
+		<div class="details" style="width: 280px;">
 			<p>
 				<a href="{% url "detail" i.id %}"> {{ i.title }} </a> by 
 				<a href="/accounts/{{ i.owner_username }}"> {{ i.owner_username }} </a>			
 			</p>
-			<p>Votes {{i.countVotes}} | Offers {{i.offers|length}}</p>
+			<p>Votes {{i.countVotes}} | Offers {{i.offers|length}} | Distance: <span class="dis_p"> </span> </p>
+				
+				<input class="lat" type="hidden" value="{{i.geo_location.coordinates.1}}" \>
+				<input class="lon" type="hidden" value="{{i.geo_location.coordinates.0}}" \>		
 		</div>
 	</div>
 {% endfor %}
@@ -132,6 +87,98 @@
 </div>
 
 <script>
+
+	function showpos(position){
+		pos = position;
+		lat=position.coords.latitude;
+		lon=position.coords.longitude;
+		console.log('Your position: '+lat+','+lon);
+
+		$("#id_geo_lon").val(lon);
+		$("#id_geo_lat").val(lat);
+
+		$("#search_but").text = 'Search';
+ 		$("#search_but").removeAttr('disabled', 'disabled');
+
+ 		text = $("#okparagraph").html();
+ 		$("#okparagraph").css('visibility','visible');
+ 		$("#okparagraph").html('');
+		$("#okparagraph").html('Got location <span class="icon-ok" ></span>');
+		
+		console.log('Updating distances for all items displayed.');
+		yadda();
+	}
+
+	function errorpos(err){
+		
+		console.log(err);
+		$("#okparagraph").css('visibility','visible');
+		$("#okparagraph").html('');
+		
+		text = $("#okparagraph").html();
+		if (err.code == 1) {
+    		$("#okparagraph").html('You said no!');
+  		}
+		if (err.code == 2) {
+    		$("#okparagraph").html('Couldn\'t get your position');
+  		}
+		if (err.code == 3) {
+    		$("#okparagraph").html('It\'s taking too long.');
+  		}
+		
+		$("#search_but").text = 'Search';
+ 		$("#search_but").removeAttr('disabled', 'disabled');
+ 		$("#geo").val("0"); 
+	}
+	
+	// Converts numeric degrees to radians */
+	function toRad(Value) {    
+    	return Value * Math.PI / 180;
+	}
+
+	function get_distance(lat1, lat2, lon1, lon2){	
+		
+		var R = 6371; // km
+		var dLat = toRad((lat2-lat1));
+		var dLon = toRad((lon2-lon1));
+		var lat1 = toRad(lat1);
+		var lat2 = toRad(lat2);
+	
+		var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);             
+            
+    	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    	var d = R * c * 1000;
+		d = Math.ceil(d);
+		
+		//console.log('a:'+a+' c:'+c+' d:'+d);
+		
+		return d;
+	}
+	
+	function yadda(){
+		$('.details').each(function(i, obj){
+			var yourLat = $('#id_geo_lat').val();
+			var yourLon = $('#id_geo_lon').val();
+			
+			var lat = $(this).find('.lat').val();
+			var lon = $(this).find('.lon').val();					
+			
+			if (!lat && !lon) {
+				console.log('We don\'t have the item\'s location.');
+				$(this).find('.dis_p').text('n/a');
+			}
+			else {
+				//console.log('Yadda:');
+				//console.log(lat+' '+lon+' '+yourLat+' '+yourLon);
+				d = get_distance(lat, yourLat, lon, yourLon );
+				console.log(d);
+				$(this).find('.dis_p').text(d+'m');	
+			}
+		});
+	}
+
 	$(document).ready(function() {
 
 		// Initialize Masonry
@@ -143,8 +190,28 @@
 		}).imagesLoaded(function() {
 			$(this).masonry('reload');
 		});
+		 		
+ 		$("#geo").change(function() {
+ 			$("#search_but").text = 'Locating...';
+ 			$("#search_but").attr('disabled', 'disabled');
+ 			
+ 			navigator.geolocation.getCurrentPosition(showpos, errorpos, {timeout:5000});
 
+		});
+		// Get distances. I chose to do this on the client as it might become expensive
+		// to do it on the server.
+		var yourLat = $('#id_geo_lat').val();
+		var yourLon = $('#id_geo_lon').val();
+			
+		if (yourLat && yourLon) {
+			yadda();
+		}
+		else{
+			console.log('We don\'t have the user\'s location.');
+		}
+		
 	});
+	
 </script>
 
 

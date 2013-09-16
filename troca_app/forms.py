@@ -109,7 +109,7 @@ class TestOfferForm(EmbeddedDocumentForm):
     def __init__(self, user_id=None, parent_document=None, data=None):
         #import ipdb; ipdb.set_trace();
         super(TestOfferForm, self).__init__(parent_document=parent_document, data=data)
-        self.fields['items'].queryset = GenericItem.objects.filter(owner_id = user_id)
+        self.fields['items'].queryset = GenericItem.objects.filter(owner_id = user_id, available='available')
 
 
 class TestImageForm(forms.Form):

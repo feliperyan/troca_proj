@@ -88,7 +88,7 @@ def getAjaxCategories(request):
 
 def index(request):
     #logger.info('*** - index view - ***')
-    item_list = GenericItem.objects.order_by('date_added')
+    item_list = GenericItem.objects.order_by('-date_added')
     paginator = Paginator(item_list, 6)
 
     page = request.GET.get('page')
@@ -170,8 +170,10 @@ def search(request):
         items = paginator.page(1)
     except EmptyPage:
         items = paginator.page(paginator.num_pages)
-
-    return render(request, 'index.html', {'items': items, 'queries': queries})
+    
+    terms = {'title':title, 'geo':geo, 'category':category, 'lat':lat, 'lon':lon}
+    
+    return render(request, 'index.html', {'items': items, 'queries': queries, 'terms':terms})
 
     #eos = GenericItem.objects(Q(geo_location__near=[37.769,40.123], \
         #geo_location__max_distance=100) & Q(title__icontains='4'))
