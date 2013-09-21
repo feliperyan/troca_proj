@@ -25,7 +25,10 @@ urlpatterns = patterns('',
     url( r'^search/$', search),
 
     url( r'^thanks/$', thanks),
+    
+    url( r'^accounts/login/$', login, {'template_name': 'login.html'} ),
     (r'^accounts/', include('userena.urls')),
+    url(r'^facebook/', include('django_facebook.urls')),
     #url( r'^accounts/login/$', login, {'template_name': 'login.html'} ),
     #url( r'^accounts/logout/$', logout, {'next_page': '/'} ),
 
@@ -48,11 +51,9 @@ urlpatterns = patterns('',
     url(r'^offers/(?P<item_id>\w+)/(?P<offer_title_slug>[-\w]+)/$', specific_offer, name='specific_offer'),
     url(r'^offers/(?P<item_id>\w+)/(?P<offer_title_slug>[-\w]+)/(?P<response>[-\w]+)/$', 
         decision_offer, name='decision_offer'),
-
-
-    url(r'^facebook/', include('django_facebook.urls')),
+                       
     #Don't add this line if you use django registration or userena for registration and auth.
-    url(r'^accounts/', include('django_facebook.auth_urls')), 
+    #url(r'^accounts/', include('django_facebook.auth_urls')), 
 
     url(r'^testImage/', testImage, name='testImage'), 
 
