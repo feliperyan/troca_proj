@@ -2,31 +2,22 @@ from mongoengine import *
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import datetime
-
 import os
 from django.contrib.auth.models import User
 from django_facebook.models import BaseFacebookProfileModel
-
 from custom_fields import DJFileField, LocalImageField
-
 from userena.models import UserenaBaseProfile
+from django.db.models.signals import post_save
+
 
 class TrocaUserProfile(BaseFacebookProfileModel, UserenaBaseProfile):
-    '''
-    From django_facebook
-    '''
     user = models.OneToOneField('auth.User')
     image = models.ImageField(blank=True, null=True, upload_to='profile_pics', max_length=255)
 
-    
-
-#Make sure we create a MyCustomProfile when creating a User
-from django.db.models.signals import post_save
 
 def create_facebook_profile(sender, instance, created, **kwargs):
     if created:
         TrocaUserProfile.objects.create(user=instance)
-
 post_save.connect(create_facebook_profile, sender=User)
 
 
@@ -56,10 +47,12 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
         #app_label = 'relational'
 
+
 class Vote(EmbeddedDocument):
     author_id = IntField(required=True)
     direction = IntField(required=True)
     date_voted = DateTimeField(default=datetime.datetime.now)
+
 
 class GenericItem(Document):
     owner_id = IntField(required=True)
@@ -74,6 +67,8 @@ class GenericItem(Document):
     img = LocalImageField(upload_to = 'ups')
     available = StringField(max_length=70, default='available')
     votes = ListField(EmbeddedDocumentField('Vote'))
+    v_count = IntField(default=0)
+    cat =  StringField(max_length=140, default='generic')
 
     meta = { 'allow_inheritance': True }        
 
@@ -91,6 +86,7 @@ class GenericItem(Document):
         return sum
 
     #Used to check and alert users if they have already made an offer to this item.
+    
     def hasAlreadyMadeOffer(self, user_id):
         for o in self.offers:
             if o.author_id == user_id:
@@ -98,6 +94,7 @@ class GenericItem(Document):
         return False
 
     # Called when this item is no longer available:
+    
     def reject_all_offers(reason):
         for o in self.offers:
             if reason:
@@ -114,8 +111,23 @@ class GenericItem(Document):
     def __unicode__(self):
         return self.title
 
+
 class Vehicle(GenericItem):
     model = StringField(max_length=70, required=True)
+
+
+class Skill(GenericItem):
+    sk_lvl = (
+        ('B', 'Beginner'),
+        ('A', 'Average'),
+        ('E', 'Expert'),
+    )
+    
+    skill_name = StringField(verbose_name='Name of the skill', max_length=140, required=True)
+    skill_level = StringField(verbose_name='Skill level', max_length=1, required=True, choices=sk_lvl, default='B')
+    class_duration = IntField(verbose_name='Duration of class')
+    date = DateTimeField(default=datetime.datetime.now)
+
 
 class ItemInOffer(EmbeddedDocument):
     itemTitle = StringField(max_length=70, required=True)
@@ -127,6 +139,7 @@ class ItemInOffer(EmbeddedDocument):
     
     class Meta:
         app_label = 'troca_app'
+
 
 class Offer(EmbeddedDocument):
     title = StringField(max_length=70, required=True)
@@ -144,6 +157,7 @@ class Offer(EmbeddedDocument):
         return self.title
 
     _meta = {}
+
 
 class ImageTest(Document):
     title = StringField(max_length=70, required=True)

@@ -21,8 +21,10 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    
     url( r'^$', index),
     url( r'^search/$', search),
+    url( r'^search/(?P<ordering>\w+)/$', search, name='search_ordering'),
 
     url( r'^thanks/$', thanks),
     

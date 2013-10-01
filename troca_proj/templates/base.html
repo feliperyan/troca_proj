@@ -11,6 +11,15 @@
 		<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" type="text/css" media="screen">
 		<script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap.js"></script>
 
+		<style type="text/css">
+			body { font-family:Helvetica,Arial,Verdana,sans-serif; }
+			header { height: 100px;  }
+			header #usernav { float: right; line-height: 100px; font-size: 14px; font-weight: bold; margin-right:20px;}
+			
+			header #usernav a span img { position: relative; top: 8px; background: #cecece; margin-left: 5px; padding: 3px; border: 1px solid #969696; }
+			
+		</style>
+
 		{%block page_specific_script%}{%endblock%}
 
 	</head>
@@ -18,33 +27,36 @@
 
 	<body>
 	
-	<div class="container">	
-		<div>
-			{% if user.is_authenticated %}
-				<p style="float: right;">
-					<a style="float: right;" href="/accounts/signout">Logout</a>
-				</p>
-				<h3> Hi {{user.username}}! </h3>		
-			{% else %}
-				<p style="float: right;">
-					<a href="/accounts/signin">Login</a>
-				</p>
-				<h3> Not logged in </h3>
-			{% endif %}
-		</div>
-		<div >
+	<div class="container" style="margin-top: 10px;">	
+		
+		<header>
+			<div class="wrapper">
+				<a href="#"><img src="{{ STATIC_URL }}images/troca_logo_3_thumb.png" alt="mysquare logo" title="mysquare - checkin and go home!" /></a>
+			
+				<span id="usernav">
+					{% if user.is_authenticated %} 
+					 	Logged in as: <a href="/accounts/{{user.username}}">{{user.username}}</a> | <a href="/accounts/signout">Logout</a>
+					{% else %}
+						You're not logged in! <a href="/accounts/signin">Login</a>
+					{% endif %}
+				</span>
+			</div>
+		</header>
+		
+		
+		<nav class="main_nav">
 			<ul class="nav nav-pills" >
-				<li><a href="/my_items">My Items</a></li>
-				<li><a href="/">Search</a></li>
-				<li><a href="/categories">Add Item</a></li>
-				<li><a href="/accounts/{{user.username}}">Profile</a></li>
+				<li><a href="/">Front Page</a></li>
+				<li><a href="/my_items">My Area</a></li>
+				<li><a href="/categories">List an Item</a></li>
+				<li><a href="/accounts/">Members</a></li>
 				<li><a href="/admin">Admin</a></li>
 			</ul>
-
-		</div>
-		<div id="content">
-			{% block content %}{% endblock %}
-		</div>
+		</nav>
+		
+			<div id="content">
+				{% block content %}{% endblock %}
+			</div>
 		
 		<hr>
 		<footer>

@@ -1,0 +1,77 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+{% load url from future %}
+
+{%block page_specific_script%}
+
+<style type="text/css">
+	ul.numbers { list-style: none; width: 320px; padding-top: 7px; margin: 0 0 10px 0; border-top: 1px solid #fff; color: #676767; }
+	ul.numbers li {  width: 95px; float: left; display: block; padding-left: 4px; height: 50px; border-right: 1px dotted #bbb; text-transform: uppercase; }
+	ul.numbers li strong { color: #434343; display: block; font-size: 2.4em; line-height: 1.1em; font-weight: bold; }
+
+</style>
+	
+{%endblock%}
+
+{% block title %}{% blocktrans with profile.user.username as username %}{{ username }}'s profile.{% endblocktrans %}{% endblock %}
+{% block content_title %}<h2>{{ profile.user.username }} {% if profile.user.get_full_name %}({{ profile.user.get_full_name }}){% endif %}</h2>{% endblock %}
+
+{% block content %}
+
+<div class="row">
+	
+	<div class="span2">
+		<div style="padding: 5px; border: 1px solid;">
+			<img height="160" width="160" class="mugshot" src="{{ profile.get_mugshot_url }}" alt="{% trans "Your mugshot" %}" />
+		</div>
+	</div>
+	
+	<div class="span5">
+		{% block profile_details %}
+		<div style="height:166px; background-color: #eeeeee; padding:4px; padding-left:1em;">	
+			{% if profile.user.get_full_name %}
+				<h3 class="fullname" style="line-height: 0.8em;"> {{ profile.user.get_full_name }} </h3>
+			{% endif %}
+			<p style="line-height: 0.8em;"><strong> Sydney, Australia </strong></p>
+			<p style="line-height: 0.8em;"><strong> Member since: Oct 2013 </strong></p>
+			
+			<div style="margin-top: 20px;" ></div>
+			
+			<ul class="numbers clearfix">
+				<li><span style="font-size: 0.8em;">Items</span><strong>185</strong></li>
+				<li><span style="font-size: 0.8em;">Completed</span><strong>344</strong></li>
+				<li class="nobrdr"><span style="font-size: 0.8em;">Votes</span><strong>127</strong></li>
+			</ul>	
+				
+		</div>
+		
+		{% endblock %}
+	</div>
+</div>
+
+<div class="white-box">
+	{% block profile_navigation %}
+	{% comment %}Dirty hack. Will use django-guardian in the future.{% endcomment %}
+	{% if user.username == profile.user.username %}
+	<ul id="box-nav">
+		{% block profile_navigation_items %}
+		<li>
+			<a href="{% url 'userena_profile_detail' user.username %}">{% trans "View profile" %}</a>
+		</li>
+		<li>
+			<a href="{% url 'userena_profile_edit' user.username %}">{% trans "Edit details" %}</a>
+		</li>
+		<li>
+			<a href="{% url 'userena_password_change' user.username %}">{% trans "Change password" %}</a>
+		</li>
+		<li>
+			<a href="{% url 'userena_email_change' user.username %}">{% trans "Change email" %}</a>
+		</li>
+		{% endblock %}
+	</ul>
+	{% endif %}
+	{% endblock %}
+
+	
+</div>
+{% endblock %}

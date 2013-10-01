@@ -54,9 +54,10 @@
 		<div class="details" style="width: 280px;">
 			<p>
 				<a href="{% url "detail" i.id %}"> {{ i.title }} </a> by 
-				<a href="/accounts/{{ i.owner_username }}"> {{ i.owner_username }} </a>			
+				<a href="/accounts/{{ i.owner_username }}"> {{ i.owner_username }} </a>
 			</p>
-			<p>Votes {{i.countVotes}} | Offers {{i.offers|length}} | Distance: <span class="dis_p"> </span> </p>
+				<p> Votes {{i.countVotes}} | Offers {{i.offers|length}} | added {{ i.date_added|date:"d M y" }} </p>		
+			<p>Distance: <span class="dis_p"> </span> </p>
 				
 				<input class="lat" type="hidden" value="{{i.geo_location.coordinates.1}}" \>
 				<input class="lon" type="hidden" value="{{i.geo_location.coordinates.0}}" \>		

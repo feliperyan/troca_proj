@@ -46,6 +46,7 @@ def voteAjax(request, item_id, vote):
             logger.info('VOTE: ok')
             v = Vote(author_id=request.user.id, direction=point)
             wantedItem.votes.append(v)
+            wantedItem.v_count += point
             wantedItem.save()
             m = {'answer': 'ok', 'total':wantedItem.countVotes()}
         
@@ -101,7 +102,7 @@ def index(request):
 
     return render(request, 'index.html', {'items': items})
 
-def search(request):
+def search(request, ordering=None):
     title = None
     geo = None
     category = None
@@ -120,7 +121,7 @@ def search(request):
     queries = q_no_page
 
     #Give us a result even if there is no search info:
-    item_list = GenericItem.objects.order_by('date_added')
+    item_list = GenericItem.objects.order_by('-date_added')
 
     if 'title' in request.GET and request.GET['title']:
         title = request.GET['title']
@@ -159,8 +160,8 @@ def search(request):
     if geo is not None:
         item_list = item_list.filter(geo_location__near=[lon,lat], geo_location__max_distance=geo)
 
-    # if title and category and geo:
-    #     items = GenericItem.objects(Q(geo_location__near=[37.769,40.123],geo_location__max_distance=100) & Q(title__icontains='4'))    
+    if ordering == 'votes':
+        item_list = item_list.order_by('-v_count')    
 
     paginator = Paginator(item_list, 6)
     page = request.GET.get('page')
@@ -191,16 +192,18 @@ def thanks(request):
 
 @login_required
 def add_item(request, category):
-
+    
+    logger.info(category)
+    
     if request.method == 'POST':        
         
         if category == 'Vehicles':
             form = VehicleForm(request.POST, request.FILES)        
         
-        elif category == 'Cameras':
-            form = ModelFormCameras(request.POST, request.FILES)        
+        elif category == 'Skills':            
+            form = SkillForm(request.POST, request.FILES)        
         
-        else:        
+        else:                    
             form = ModelFormGenericItem(request.POST, request.FILES)
 
         if form.is_valid():
@@ -223,10 +226,12 @@ def add_item(request, category):
         if category == 'Vehicles':
             form = VehicleForm()
         
-        elif category == 'Cameras':
-            form = ModelFormCameras()
+        elif category == 'Skills':
+            logger.info('display Skills form')
+            form = SkillForm()
         
         else:        
+            logger.info('display Generic form')
             form = ModelFormGenericItem()
 
     return render(request, 'item.html', {
@@ -234,12 +239,8 @@ def add_item(request, category):
         'category': category,
     } )
 
-def handle_uploaded_file(f):
-    with open('some/file/name.txt', 'wb+') as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)
-
 # EmbeddedForm MakeOffer has replaced this - Will it be good enought to stay?!
+
 @login_required
 def makeOffer(request, item_id):
     

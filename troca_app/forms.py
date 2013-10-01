@@ -12,6 +12,7 @@ import re
 from mongodbforms import DocumentMultipleChoiceField
 from PIL import Image
 
+# Custom Form Fields:
 
 class PointFieldForm(CharField):
     def clean(self, value):
@@ -35,6 +36,8 @@ class PointFieldForm(CharField):
         return clean_data
 
 
+# Forms for adding items:
+
 class ModelFormGenericItem(DocumentForm):
     class Meta:
         document = GenericItem
@@ -51,7 +54,7 @@ class ModelFormGenericItem(DocumentForm):
             if image._size > 4*1024*1024:
                 raise forms.ValidationError(
                    "Image Must be <4mb Less")
-            if not image.name[-3:].lower() in ['jpg']:
+            if not image.name[-3:].lower() in ['jpg','png']:
                 raise forms.ValidationError(
                    "Your file extension was not recongized")
             try: 
@@ -68,9 +71,14 @@ class VehicleForm(DocumentForm):
         document = Vehicle
         fields = ('title', 'value', 'description', 'img', 'geo_location', 'model')
 
-    img = forms.ImageField(widget=forms.ClearableFileInput, label='Image')
-    geo_location = PointFieldForm(required=False, widget=forms.HiddenInput)
 
+class SkillForm(ModelFormGenericItem):
+    class Meta:
+        document = Skill
+        fields = ('title', 'skill_name', 'skill_level', 'class_duration', 'value', 'description', 'img', 'geo_location')
+
+
+# Forms for making Offers:
 
 class SelectMultipleItemsField(DocumentMultipleChoiceField):
 #class SelectMultipleItemsField(ModelMultipleChoiceField):

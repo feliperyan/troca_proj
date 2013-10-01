@@ -41,31 +41,40 @@
 
 {% block content %}
 
-<h2> TEST of Item Form </h2>
-
-
-<form action="/add_item/{{ category }}" enctype="multipart/form-data" method="post">
+<form class="form-horizontal" action="/add_item/{{ category }}" enctype="multipart/form-data" method="post">
 	{% csrf_token %}
-
-	{% for f in form  %}
-		{% if not f.is_hidden %} 
-			<div class="fieldWrapper">
-				{{ f.errors }}
-				{{ f.label_tag }} {{ f }}
-			</div>
+	<fieldset>
+	
+	<legend>Listing</legend>
+	
+	{% for field in form  %}
+		{% if not field.is_hidden %} 
+			
+			<div class="control-group">
+				{{ field.errors }}
+    			<label class="control-label" for="{{field.auto_id}}" > {{ field.label }} </label>	
+    			<div class="controls"> {{ field }} </div> 
+    		</div>
+    		
 		{% else %}
-			{{ f }}
+			{{ field }}
 		{% endif %}
 
 	{% endfor %}
-
-		<p id="okparagraph">
+	
+	<div class="control-group">
+  		<div class="controls" id="okparagraph"> 
 			<input id="geoButton" type="button" value="Add Location" class="btn btn-small btn-info"/>
-		</p>
+		</div>
+	</div>
 		
 
-	<p><input type="submit" value="Submit" class="btn btn-large btn-primary" style="margin-top: 10pt;" /> </p>
-
+	<div class="control-group">
+  		<div class="controls">
+  			<input type="submit" value="Submit" class="btn btn-large btn-primary" style="margin-top: 10pt;" /> </p>
+  		</div>
+  	</div>
+	</fieldset>
 </form>
 
 
