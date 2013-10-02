@@ -12,14 +12,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^mongonaut/', include('mongonaut.urls')),
-    # Examples:
-    # url(r'^$', 'troca_proj.views.home', name='home'),
-    # url(r'^troca_proj/', include('troca_proj.foo.urls')),
 
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     
     url( r'^$', index),
@@ -29,6 +22,9 @@ urlpatterns = patterns('',
     url( r'^thanks/$', thanks),
     
     url( r'^accounts/login/$', login, {'template_name': 'login.html'} ),
+    url(r'^accounts/signin/', 'userena.views.signin', {'template_name': 'userena/signin_form.html'}, name="signin"),
+    url(r'^accounts/signup/', 'userena.views.signup', {'template_name': 'userena/signup_form.html'}, name="signup"),
+    
     (r'^accounts/', include('userena.urls')),
     url(r'^facebook/', include('django_facebook.urls')),
     #url( r'^accounts/login/$', login, {'template_name': 'login.html'} ),
