@@ -22,8 +22,8 @@ urlpatterns = patterns('',
     url( r'^thanks/$', thanks),
     
     url( r'^accounts/login/$', login, {'template_name': 'login.html'} ),
-    url(r'^accounts/signin/', 'userena.views.signin', {'template_name': 'userena/signin_form.html'}, name="signin"),
-    url(r'^accounts/signup/', 'userena.views.signup', {'template_name': 'BLAHuserena/signup_form.html'}, name="signup"),
+    url(r'^accounts/signin/', 'userena.views.signin', {'template_name': 'Userena/signin_form.html'}, name="signin"),
+    url(r'^accounts/signup/', 'userena.views.signup', {'template_name': 'Userena/signup_form.html'}, name="signup"),
     
     (r'^accounts/', include('userena.urls')),
     url(r'^facebook/', include('django_facebook.urls')),
