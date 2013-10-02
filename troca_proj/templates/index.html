@@ -90,6 +90,7 @@
 <script>
 
 	function showpos(position){
+				
 		pos = position;
 		lat=position.coords.latitude;
 		lon=position.coords.longitude;
@@ -193,6 +194,12 @@
 		});
 		 		
  		$("#geo").change(function() {
+ 			
+ 			if ( $("#id_geo_lon").val() || $("#id_geo_lat").val() ){
+				console.log('Already obtained lon lat');
+				return;
+			}
+ 			
  			$("#search_but").text = 'Locating...';
  			$("#search_but").attr('disabled', 'disabled');
  			
