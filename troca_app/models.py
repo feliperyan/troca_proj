@@ -69,7 +69,8 @@ class GenericItem(Document):
     votes = ListField(EmbeddedDocumentField('Vote'))
     v_count = IntField(default=0)
     cat =  StringField(max_length=140, default='generic')
-
+    w_cat = ListField(StringField(max_length=50))
+    
     meta = { 'allow_inheritance': True }        
 
     def hasAlreadyVoted(self, user_id):
@@ -110,11 +111,30 @@ class GenericItem(Document):
 
     def __unicode__(self):
         return self.title
+    
+    def fields_for_detail_template(self):
+        fs = [ 'title', 'description', 'value', 'text_location' ]
+        return fs
+    
+    def get_name_vals(self):
+        fs = self.fields_for_detail_template()
+        r = []
+        for f in fs:
+            name = self._fields[f].verbose_name
+            val = self.__getattribute__(f)
+            r.append( (name, val) )
+        
+        return r
 
 
 class Vehicle(GenericItem):
     model = StringField(max_length=70, required=True)
 
+class Ticket(GenericItem):
+    category_slug = 'Tickets and Reservations'
+    date = DateTimeField(verbose_name='Date of event', default=datetime.datetime.now)
+    location = StringField(verbose_name='Location of event', max_length=200, required=True)
+    
 
 class Skill(GenericItem):
     sk_lvl = (
@@ -122,12 +142,19 @@ class Skill(GenericItem):
         ('A', 'Average'),
         ('E', 'Expert'),
     )
+    category_slug = 'Tickets and Reservations'
     
     skill_name = StringField(verbose_name='Name of the skill', max_length=140, required=True)
     skill_level = StringField(verbose_name='Skill level', max_length=1, required=True, choices=sk_lvl, default='B')
     class_duration = IntField(verbose_name='Duration of class')
     date = DateTimeField(default=datetime.datetime.now)
 
+    def fields_for_detail_template(self):
+        f_wanted = ['skill_level', 'skill_name', 'class_duration', 'date']
+        fs = super(Skill, self).fields_for_detail_template()
+        for i in f_wanted: fs.append( i )
+        return fs
+        
 
 class ItemInOffer(EmbeddedDocument):
     itemTitle = StringField(max_length=70, required=True)
@@ -145,7 +172,7 @@ class Offer(EmbeddedDocument):
     title = StringField(max_length=70, required=True)
     author_id = IntField(required=False)
     author = StringField(max_length=70, required=False)
-    items = ListField(EmbeddedDocumentField('ItemInOffer'))
+    items = ListField(EmbeddedDocumentField('ItemInOffer'), required=True)
     
     # Change to Status = ChoiceField?
     status = StringField(max_length=70, default='pending')

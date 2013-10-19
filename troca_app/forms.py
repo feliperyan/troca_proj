@@ -2,7 +2,8 @@ from django import forms
 from django.forms import ModelMultipleChoiceField
 from troca_app.models import *
 from django.forms import ImageField
-from django.forms import CharField
+from django.forms.fields import CharField, MultipleChoiceField
+from django.forms.widgets import CheckboxSelectMultiple
 from mongodbforms import DocumentForm
 from mongodbforms import EmbeddedDocumentForm
 from mongodbforms import ListField
@@ -38,14 +39,21 @@ class PointFieldForm(CharField):
 
 # Forms for adding items:
 
+
 class ModelFormGenericItem(DocumentForm):
     class Meta:
         document = GenericItem
-        fields = ('title', 'value', 'description', 'img', 'geo_location')
+        fields = ('title', 'value', 'description', 'img', 'geo_location', 'w_cat')
 
+    c = list(Category.objects.all())
+    cats = []
+    for x in c:
+        cats.append( ( x.id, x.categoryTitle ) )
+    
     img = forms.ImageField(widget=forms.ClearableFileInput, label='Image')
     geo_location = PointFieldForm(required=False, widget=forms.HiddenInput)
-    
+    w_cat = MultipleChoiceField(widget=CheckboxSelectMultiple, required=False, choices=cats)
+
     def clean_img(self):
         cleaned_data = super(ModelFormGenericItem,self).clean()
         image = cleaned_data.get("img")
@@ -79,6 +87,7 @@ class SkillForm(ModelFormGenericItem):
 
 
 # Forms for making Offers:
+
 
 class SelectMultipleItemsField(DocumentMultipleChoiceField):
 #class SelectMultipleItemsField(ModelMultipleChoiceField):

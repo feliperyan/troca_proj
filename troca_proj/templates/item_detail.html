@@ -38,7 +38,7 @@
 	function updateVotes(data){
 		if (data.answer == 'ok') {
 			$("#votes_count").text('');
-			$("#votes_count").text('Votes: ' + data.total);
+			$("#votes_count").text(data.total);
 			$("#vote_message").text('Thanks for voting!');
 		}
 		else {
@@ -58,6 +58,7 @@
 					updateVotes(data);
 				},
 				"json");
+				return false;
 			}
 		});
 		$("#voteup").on({ click:function() {
@@ -69,6 +70,7 @@
 					updateVotes(data);
 				},
 				"json");
+				return false;
 			}
 		});
 
@@ -79,48 +81,66 @@
 {% endblock %}
 
 {% block content %}
-	{% if user.is_authenticated %}
-		<p id="votes_count"> Votes: 
-			{% if item.votes %} 
-				{{ item.countVotes }}
-			{% else %} 
-				0 
-			{% endif %}
-		</p>
-		<p> 
-			<a id="voteup" href="#"> <span style="color:green">Vote UP</span> </a> 
-			<a id="votedown" href="#"><span style="color:#FF3333">Vote Down</span> </a>
-			<div id="vote_message" class="label label-info" style="visibility:hidden">&nbsp;</div>
-		</p>
-	{%endif%}
-	<h2> 
-		{% if item.available == 'available' %}
-			<a href="{% url "make_offer" item.id %}" > Make offer </a>  
-		{% else %}
-			Item unavailable!
+
+<div class="row">
+	
+	<div class="span4">
+		{% if item.img %}
+			<div 
+			style="margin:5px; padding:5px; background:#FFFFFF; box-shadow: 0 2px 5px 0 rgba(0,0,0,0.5)">
+				<img src="{{MEDIA_URL}}{{item.img}}" width="300" height="300" />
+			</div>
 		{% endif %}
-	</h2>
+		
+		<p style="padding:5px;"> 					
+			{% if user.is_authenticated %} 
+				<a id="voteup" class='btn btn-success'  href="#"><i class="icon-thumbs-up"></i></a>
+				{% if item.votes %} 
+					<span id="votes_count" class="badge badge-info"  >{{ item.v_count }}</span>
+				{% else %} 
+					<span id="votes_count" class="badge badge-info">0</span>
+				{% endif %} 
+				<a id="votedown" class='btn btn-danger' href="#"><i class="icon-thumbs-down"></i></a>
+				
+			{%endif%}
+			{% if item.available == 'available' %}
+				<a style="color: white;" href="{% url "make_offer" item.id %}" >
+					<button id="search_but" type="submit" class="btn btn-medium btn-primary">
+					 Make offer
+					</button>
+				</a>
+			{% else %}
+				Item unavailable!
+			{% endif %}
+			<div id="vote_message" class="label label-info" style="visibility:hidden">&nbsp;</div>
+		</p>		
+	</div>
 
-	{% if item.img %}
-		<img src="{{MEDIA_URL}}{{item.img}}" width="300" height="300" />
-	{% endif %}
-
-	<h3>Title: {{ item.title }} </h3>
-	<h3> Owner: {{ owner.username }} </h3>
-	<h3>Value: ${{ item.value }} </h3>
-	<h3> Description: </h3>
-	<p> {{ item.description }} </p>
-
-	{% if item.location %}
-		<h3>Location: ${{ item.location }} </h3>
-	{% endif %}
-
-	{% for o in item.offers %}
-		<div id="offers">            
-			<p> Offer: {{ o.title }} </p>
-			<p> Author: {{ o.author }} </p>			
+	<div class="span4">
+		<div 
+			style="margin:5px; padding:0.5em 0.5em 0.5em 1em; background:#FFFFFF; box-shadow: 0 2px 5px 0 rgba(0,0,0,0.5)">
+			
+			<h3>{{ item.title }}</h3>
+			{% for i in item.get_name_vals %}
+				<p> <strong>{{ i.0 }}</strong> {{ i.1 }} </p>
+			{% endfor %}
 		</div>
-	{% endfor %}		
+		
+		<div 
+			style="margin:5px; padding:0.5em 0.5em 0.5em 1em; background:#FFFFFF; box-shadow: 0 2px 5px 0 rgba(0,0,0,0.5)">
+			<h3>Offers</h3>
+			{% for o in item.offers %}
+				<div id="offers">            
+					<p> Offer: <a href="{% url 'specific_offer' item.id o.slug %}">{{ o.title }}</a> </p>
+					<p> by <a href="/accounts/{{o.author}}">{{ o.author }}</a> </p>			
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+	
+		
+</div>
+
 
 {% endblock %}
 

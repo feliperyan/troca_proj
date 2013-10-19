@@ -88,7 +88,8 @@ def getAjaxCategories(request):
     return HttpResponse(message, mimetype='application/json')
 
 def index(request):
-    #logger.info('*** - index view - ***')
+    
+    #categories = Category.objects.all()
     item_list = GenericItem.objects.order_by('-date_added')
     paginator = Paginator(item_list, 6)
 
@@ -101,6 +102,7 @@ def index(request):
         items = paginator.page(paginator.num_pages)
 
     return render(request, 'index.html', {'items': items})
+
 
 def search(request, ordering=None):
     title = None
@@ -142,8 +144,8 @@ def search(request, ordering=None):
             if geo == 0:
                 geo = None
 
-    if 'category' in request.GET and request.GET['category']:
-        category = request.GET['category']
+    if 'cat' in request.GET and request.GET['cat']:
+        category = request.GET['cat']
         if category == 'abc':
             category = None
 
@@ -156,6 +158,10 @@ def search(request, ordering=None):
     if title is not None:
         logger.info('searching for title:'+title)
         item_list = GenericItem.objects(title__icontains=title).order_by('date_added')
+    
+    if category is not None:
+        logger.info('searching for category:'+category)
+        item_list = item_list.filter(cat__icontains=category)
         
     if geo is not None:
         item_list = item_list.filter(geo_location__near=[lon,lat], geo_location__max_distance=geo)
@@ -211,6 +217,7 @@ def add_item(request, category):
             instance = form.save(commit = False)
             instance.owner_id = request.user.id
             instance.owner_username = request.user.username
+            instance.cat = instance._class_name.split('.')[-1]
             
             instance.save()
             
