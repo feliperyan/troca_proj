@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{%block page_specific_script%}
+
+<script>
+	
+	function getCookie(name) {
+	    var cookieValue = null;
+	    if (document.cookie && document.cookie != '') {
+	        var cookies = document.cookie.split(';');
+	        for (var i = 0; i < cookies.length; i++) {
+	            var cookie = jQuery.trim(cookies[i]);
+	            // Does this cookie string begin with the name we want?
+	            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+	                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+	                break;
+	            }
+	        }
+	    }
+    	return cookieValue;
+	}
+	var csrftoken = getCookie('csrftoken');
+
+	function csrfSafeMethod(method) {
+    	// these HTTP methods do not require CSRF protection
+    	return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+
+	$.ajaxSetup({
+    	crossDomain: false, // obviates need for sameOrigin test
+    	beforeSend: function(xhr, settings) {
+        	if (!csrfSafeMethod(settings.type)) {
+            	xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        	}
+    	}
+	});
+
+	function updateVotes(data){
+		if (data.answer == 'ok') {
+			$("#votes_count").text('');
+			$("#votes_count").text('Votes: ' + data.total);
+			$("#vote_message").text('Thanks for voting!');
+		}
+		else {
+			$("#vote_message").text('You already voted!');
+		}
+		$("#vote_message").css('visibility','visible');	
+	}
+
+	$(document).ready(function() {
+		
+		$("#votedown").on({ click:function() {
+			console.log("/vote/{{item.id}}/down");
+			var voted = $.post(
+				"/vote/{{item.id}}/down",new Date(),
+				function(data){
+					console.log(data);
+					updateVotes(data);
+				},
+				"json");
+			}
+		});
+		$("#voteup").on({ click:function() {
+			console.log("/vote/{{item.id}}/up");
+			var voted = $.post(
+				"/vote/{{item.id}}/up",new Date(),
+				function(data){
+					console.log(data); 
+					updateVotes(data);
+				},
+				"json");
+			}
+		});
+
+	});
+
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+	<div class="span4">
+		{% if item.img %}
+			<img src="{{MEDIA_URL}}{{item.img}}" width="400" height="400" />
+		{% endif %}
+		
+		{% if user.is_authenticated %}
+			<p id="votes_count"> Votes: 
+				{% if item.votes %} 
+					{{ item.v_count }}
+				{% else %} 
+					0 
+				{% endif %}
+			</p>
+			<p> 
+				<a id="voteup" href="#"> <span style="color:green">Vote UP</span> </a> 
+				<a id="votedown" href="#"><span style="color:#FF3333">Vote Down</span> </a>
+				<div id="vote_message" class="label label-info" style="visibility:hidden">&nbsp;</div>
+			</p>
+		{%endif%}		
+	</div>
+
+	<div class="span4">
+		
+		{% for i in item.get_name_vals %}
+			<p> {{ i.0 }} {{ i.1 }} </p>
+		{% endfor %}
+	
+		{% for o in item.offers %}
+			<div id="offers">            
+				<p> Offer: {{ o.title }} </p>
+				<p> Author: {{ o.author }} </p>			
+			</div>
+		{% endfor %}		
+	</div>
+
+</div>
+
+	<h2> 
+		{% if item.available == 'available' %}
+			<a href="{% url "make_offer" item.id %}" > Make offer </a>  
+		{% else %}
+			Item unavailable!
+		{% endif %}
+	</h2>
+	
+	<ul>
+		{% for i in item.fields_for_detail_template %}
+			<li> {{ i }} </li>
+		{% endfor %}
+	
+	</ul>
+	<h3> {{ item.fields_for_detail_template.0 }} </h3>
+	<h3> {{ item.fields_for_detail_template.1 }} </h3>
+
+{% endblock %}
+

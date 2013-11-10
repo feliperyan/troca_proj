@@ -6,7 +6,7 @@
 
 	{% if offer %}
 		<div id="offers">				
-			{{ offer.title }} by <a href="#">{{ o.author }} </a>
+			{{ offer.title }} by <a href="/accounts/{{ offer.author }}">{{ offer.author }} </a>
 			<ul>
 				{% for i in offer.items %}
 					<li> <a href="{% url 'detail' i.item.id %}" > {{ i.itemTitle }} </a> </li>
