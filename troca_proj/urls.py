@@ -1,4 +1,5 @@
-from django.conf.urls.defaults import patterns, include, url
+#from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, url, include
 from troca_app.views import *
 from django.contrib.auth.views import login
 from django.contrib.auth.views import logout
