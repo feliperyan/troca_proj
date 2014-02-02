@@ -16,15 +16,19 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     
-    url( r'^$', index),
-    url( r'^search/$', search),
-    url( r'^search/(?P<ordering>\w+)/$', search, name='search_ordering'),
+    url(r'^$', index),
+    url(r'^search/$', search),
+    url(r'^search/(?P<ordering>\w+)/$', search, name='search_ordering'),
 
-    url( r'^thanks/$', thanks),
+    url(r'^thanks/$', thanks),
     
-    url( r'^accounts/login/$', login, {'template_name': 'login.html'} ),
+    url(r'^accounts/login/$', login, {'template_name': 'login.html'} ),
     url(r'^accounts/signin/', 'userena.views.signin', {'template_name': 'Userena/signin_form.html'}, name="signin"),
     url(r'^accounts/signup/', 'userena.views.signup', {'template_name': 'Userena/signup_form.html'}, name="signup"),
+    url(r'^accounts/(?P<username>(?!signout|signup|signin)[\.\w-]+)/$',
+       profile_detail_extended,
+       name='userena_profile_detail'),
+    
     
     (r'^accounts/', include('userena.urls')),
     url(r'^facebook/', include('django_facebook.urls')),
@@ -32,7 +36,7 @@ urlpatterns = patterns('',
     #url( r'^accounts/logout/$', logout, {'next_page': '/'} ),
 
     #url( r'^my_items/$', login_required(ItemsForLoggedUser.as_view()) ),
-    url( r'^my_items/$', myProfile, name='myProfile' ),
+    url(r'^my_items/$', myProfile, name='myProfile' ),
 
     url(r'^items/(?P<item_id>\w+)/$', detail, name='detail'),
 

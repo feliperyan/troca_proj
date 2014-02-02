@@ -16,6 +16,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from bson.objectid import ObjectId
 
+from userena.views import *
+
 import logging
 logger = logging.getLogger('troca')
 
@@ -57,6 +59,7 @@ def voteAjax(request, item_id, vote):
 
     return HttpResponse(m, mimetype='application/json')
 
+
 def getAjaxCategories(request):
 
     if request.GET['category']:
@@ -86,6 +89,7 @@ def getAjaxCategories(request):
     #import time
     #time.sleep(3)
     return HttpResponse(message, mimetype='application/json')
+
 
 def index(request):
     
@@ -185,6 +189,7 @@ def search(request, ordering=None):
     #eos = GenericItem.objects(Q(geo_location__near=[37.769,40.123], \
         #geo_location__max_distance=100) & Q(title__icontains='4'))
 
+
 def detail(request, item_id):
     try:
         item = GenericItem.objects.get(pk=item_id)
@@ -192,6 +197,7 @@ def detail(request, item_id):
     except GenericItem.DoesNotExist:
         raise Http404
     return render(request, 'item_detail.html', {'item': item, 'owner': owner})
+
 
 def thanks(request):
     return render(request, 'thanks.html', {})
@@ -425,12 +431,14 @@ def testEmbeddedDocumentForm(request, item_id):
             'wantedItem': wantedItem
         })
 
+
 def offers_for_item(request, item_id):
     wantedItem = GenericItem.objects.get(pk=item_id)
 
     return render(request, 'all_offers_for_item.html', {
             'item': wantedItem
     })
+
 
 def specific_offer(request, item_id, offer_title_slug):
     wantedItem = GenericItem.objects.get(pk=item_id)
@@ -452,6 +460,7 @@ def specific_offer(request, item_id, offer_title_slug):
             'item': wantedItem
     })    
 
+
 def testImage(request):
     
     if request.POST:
@@ -471,4 +480,13 @@ def testImage(request):
         return render(request, 'testImage.html', { 'form': form })
 
 
-
+def profile_detail_extended(request, username):
+    #logger.info('new profile')
+    extra_context = dict()
+    #extra_context['extra'] = 'boom!'
+    
+    extra_context['active_items'] = GenericItem.objects.filter(\
+        available = 'available',owner_id = request.user.id).count()
+    
+    return profile_detail(request, username,\
+    template_name='userena/profile_detail.html', extra_context=extra_context)

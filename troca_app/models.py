@@ -80,6 +80,7 @@ class GenericItem(Document):
         return False
 
     #Tally up the votes:
+    
     def countVotes(self):
         sum = 0
         for v in self.votes:
@@ -99,7 +100,7 @@ class GenericItem(Document):
     def reject_all_offers(reason):
         for o in self.offers:
             if reason:
-                o.status = 'reason'
+                o.status = reason
             else:
                 o.status = 'rejected'
 
@@ -129,6 +130,7 @@ class GenericItem(Document):
 
 class Vehicle(GenericItem):
     model = StringField(max_length=70, required=True)
+
 
 class Ticket(GenericItem):
     category_slug = 'Tickets and Reservations'
