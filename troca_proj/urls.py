@@ -26,7 +26,7 @@ urlpatterns = patterns('',
     url(r'^accounts/signin/', 'userena.views.signin', {'template_name': 'Userena/signin_form.html'}, name="signin"),
     url(r'^accounts/signup/', 'userena.views.signup', {'template_name': 'Userena/signup_form.html'}, name="signup"),
     url(r'^accounts/(?P<username>(?!signout|signup|signin)[\.\w-]+)/$',
-       profile_detail_extended,
+       profile_detail_extended, {'template_name': 'Userena/profile_detail.html'},
        name='userena_profile_detail'),
     
     

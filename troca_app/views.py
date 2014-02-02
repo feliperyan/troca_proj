@@ -480,7 +480,7 @@ def testImage(request):
         return render(request, 'testImage.html', { 'form': form })
 
 
-def profile_detail_extended(request, username):
+def profile_detail_extended(request, username, template_name):
     #logger.info('new profile')
     extra_context = dict()
     #extra_context['extra'] = 'boom!'
@@ -489,4 +489,4 @@ def profile_detail_extended(request, username):
         available = 'available',owner_id = request.user.id).count()
     
     return profile_detail(request, username,\
-    template_name='userena/profile_detail.html', extra_context=extra_context)
+    template_name=template_name, extra_context=extra_context)
