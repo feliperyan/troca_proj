@@ -1,6 +1,7 @@
 #from django.conf.urls.defaults import patterns, include, url
 from django.conf.urls import patterns, url, include
 from troca_app.views import *
+from troca_app.forms import CustomEditProfile
 from django.contrib.auth.views import login
 from django.contrib.auth.views import logout
 
@@ -28,6 +29,8 @@ urlpatterns = patterns('',
     url(r'^accounts/(?P<username>(?!signout|signup|signin)[\.\w-]+)/$',
        profile_detail_extended, {'template_name': 'Userena/profile_detail.html'},
        name='userena_profile_detail'),
+    url(r'^accounts/(?P<username>[\.\w-]+)/edit/$','userena.views.profile_edit',
+        {'edit_profile_form': CustomEditProfile},name='userena_profile_edit'),
     
     
     (r'^accounts/', include('userena.urls')),

@@ -16,7 +16,7 @@
 	{% endif %}
 
 <p>
-	{% if item.owner_id != user.id and user.is_authenticated %} 
+	{% if item.owner_id == user.id and user.is_authenticated %} 
 		<a href="{% url 'decision_offer' item.id offer.slug 'accept' %}" class="btn btn-success">Accept!</a> 
 		<a href="{% url 'decision_offer' item.id offer.slug 'reject' %}" class="btn btn-danger">Reject!</a>
 	{% endif %} 

@@ -13,6 +13,8 @@ import re
 from mongodbforms import DocumentMultipleChoiceField
 from PIL import Image
 
+from userena.forms import EditProfileForm
+
 # Custom Form Fields:
 
 class PointFieldForm(CharField):
@@ -134,4 +136,8 @@ class TestImageForm(forms.Form):
     img = forms.ImageField(widget=forms.ClearableFileInput)
 
 
-
+class CustomEditProfile(EditProfileForm):
+    class Meta(EditProfileForm.Meta):
+        exclude = EditProfileForm.Meta.exclude +\
+        ['privacy','facebook_id','access_token','facebook_name','facebook_profile_url',
+         'blog_url','raw_data','facebook_open_graph','new_token_required','image',]
