@@ -45,16 +45,17 @@ class PointFieldForm(CharField):
 class ModelFormGenericItem(DocumentForm):
     class Meta:
         document = GenericItem
-        fields = ('title', 'value', 'description', 'img', 'geo_location', 'w_cat')
+        #fields = ('title', 'value', 'description', 'img', 'geo_location', 'w_cat')
+        fields = ('title', 'value', 'description', 'img', 'geo_location',)
 
-    c = list(Category.objects.all())
     cats = []
+    c = list(Category.objects.all())
     for x in c:
         cats.append( ( x.id, x.categoryTitle ) )
-    
+
     img = forms.ImageField(widget=forms.ClearableFileInput, label='Image')
     geo_location = PointFieldForm(required=False, widget=forms.HiddenInput)
-    w_cat = MultipleChoiceField(widget=CheckboxSelectMultiple, required=False, choices=cats)
+    #w_cat = MultipleChoiceField(widget=CheckboxSelectMultiple, required=False, choices=cats)
 
     def clean_img(self):
         cleaned_data = super(ModelFormGenericItem,self).clean()
@@ -120,10 +121,10 @@ class TestOfferForm(EmbeddedDocumentForm):
     class Meta:
         document = Offer
         embedded_field_name = 'offers' 
-        #fields = ['title']
         fields = ['title', 'items']
 
-    items = SelectMultipleItemsField (queryset=GenericItem.objects.filter(owner_id=0), widget=forms.CheckboxSelectMultiple, required=True)
+    items = SelectMultipleItemsField (queryset=GenericItem.objects.filter(owner_id=0), \
+        widget=forms.CheckboxSelectMultiple, required=True)
 
     def __init__(self, user_id=None, parent_document=None, data=None):
         #import ipdb; ipdb.set_trace();
