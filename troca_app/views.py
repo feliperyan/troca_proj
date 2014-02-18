@@ -486,14 +486,16 @@ def profile_detail_extended(request, username, template_name):
     extra_context = dict()
     #extra_context['extra'] = 'boom!'
     
+    u = get_object_or_404(User, username = username)
+    
     extra_context['active_items'] = GenericItem.objects.filter(\
-        available = 'available',owner_id = request.user.id).count()
+        available = 'available',owner_id = u.id).count()
         
     extra_context['traded_out'] = GenericItem.objects.filter(\
-        available = 'traded',owner_id = request.user.id).count()
+        available = 'traded',owner_id = u.id).count()
         
     extra_context['traded_in'] = GenericItem.objects(__raw__={ \
-        'offers.author_id': request.user.id, 'offers.status': 'accepted' }).count()
+        'offers.author_id': u.id, 'offers.status': 'accepted' }).count()
     
     return profile_detail(request, username,\
     template_name=template_name, extra_context=extra_context)
