@@ -114,7 +114,7 @@ class GenericItem(Document):
         return self.title
     
     def fields_for_detail_template(self):
-        fs = [ 'title', 'description', 'value', 'text_location' ]
+        fs = [ 'title', 'description', 'value' ]
         return fs
     
     def get_name_vals(self):
@@ -137,6 +137,11 @@ class Ticket(GenericItem):
     date = DateTimeField(verbose_name='Date of event', default=datetime.datetime.now)
     location = StringField(verbose_name='Location of event', max_length=200, required=True)
     
+    def fields_for_detail_template(self):
+        f_wanted = ['date', 'location']
+        fs = super(Ticket, self).fields_for_detail_template()
+        for i in f_wanted: fs.append( i )
+        return fs
 
 class Skill(GenericItem):
     sk_lvl = (
@@ -144,7 +149,7 @@ class Skill(GenericItem):
         ('A', 'Average'),
         ('E', 'Expert'),
     )
-    category_slug = 'Tickets and Reservations'
+    category_slug = 'Skills'
     
     skill_name = StringField(verbose_name='Name of the skill', max_length=140, required=True)
     skill_level = StringField(verbose_name='Skill level', max_length=1, required=True, choices=sk_lvl, default='B')

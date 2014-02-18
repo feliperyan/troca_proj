@@ -103,10 +103,22 @@
 				<a id="votedown" class='btn btn-danger' href="#"><i class="icon-thumbs-down"></i></a>
 				
 			{%endif%}
-			{% if item.available == 'available' %}
+			{% if item.available == 'available' and item.owner_id != user.id %}
 				<a style="color: white;" href="{% url "make_offer" item.id %}" >
 					<button id="search_but" type="submit" class="btn btn-medium btn-primary">
 					 Make offer
+					</button>
+				</a>
+			{% elif item.available == 'available' and item.owner_id == user.id %}
+				<a style="color: white;" href="#" >
+					<button type="submit" class="btn btn-medium btn-warning">
+					 Deactivate
+					</button>
+				</a>
+			{% elif item.available != 'available' and item.owner_id == user.id %}
+				<a style="color: white;" href="#" >
+					<button type="submit" class="btn btn-medium btn-success">
+					 Re-Activate
 					</button>
 				</a>
 			{% else %}

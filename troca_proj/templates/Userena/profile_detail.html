@@ -29,9 +29,7 @@
 	<div class="span5">
 		{% block profile_details %}
 		<div style="height:166px; background-color: #eeeeee; padding:4px; padding-left:1em;">	
-			{% if profile.user.get_full_name %}
-				<h3 class="fullname" style="line-height: 0.8em;"> {{ profile.user.get_full_name }} </h3>
-			{% endif %}
+			<h3 class="fullname" style="line-height: 0.8em;">{{ profile.get_full_name_or_username }} </h3>
 			<p style="line-height: 0.8em;"><strong> Sydney, Australia </strong></p>
 			<p style="line-height: 0.8em;"><strong> Member since: {{ profile.user.date_joined|date:"M Y" }} </strong></p>
 			

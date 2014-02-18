@@ -83,6 +83,12 @@ class VehicleForm(DocumentForm):
         fields = ('title', 'value', 'description', 'img', 'geo_location', 'model')
 
 
+class TicketsForm(ModelFormGenericItem):
+    class Meta:
+        document = Ticket
+        fields = ('title', 'date', 'location', 'value', 'description', 'img', 'geo_location')
+
+
 class SkillForm(ModelFormGenericItem):
     class Meta:
         document = Skill

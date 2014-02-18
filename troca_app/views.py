@@ -209,8 +209,9 @@ def add_item(request, category):
     
     if request.method == 'POST':        
         
-        if category == 'Vehicles':
-            form = VehicleForm(request.POST, request.FILES)        
+        if category == 'Tickets_and_reservations':
+            logger.info('got tickets form') 
+            form = TicketsForm(request.POST, request.FILES)       
         
         elif category == 'Skills':            
             form = SkillForm(request.POST, request.FILES)        
@@ -236,8 +237,8 @@ def add_item(request, category):
         if i.count() != 0:
             raise Http404
 
-        if category == 'Vehicles':
-            form = VehicleForm()
+        if category == 'Tickets_and_reservations':
+            form = TicketsForm()
         
         elif category == 'Skills':
             logger.info('display Skills form')
@@ -317,7 +318,7 @@ def decision_offer(request, item_id, offer_title_slug, response):
     wantedItem = GenericItem.objects.get(pk=item_id)
     ofr = None
 
-    import ipdb; ipdb.set_trace()
+    #import ipdb; ipdb.set_trace()
 
     #Only item owner can accept offers of course:
     if owner != wantedItem.owner_id or wantedItem is None:
